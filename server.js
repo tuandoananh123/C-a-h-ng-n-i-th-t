@@ -68,11 +68,13 @@ app.use(session({
   },
   store: store,
   resave: false,
-  saveUninitialized: false,
-  store.on('error', function(error) {
-    console.error('Session store error:', error);
-  })
+  saveUninitialized: false
 }));
+
+// Move session store error handling outside the session configuration
+store.on('error', function(error) {
+  console.error('Session store error:', error);
+});
 
 // Middleware để debug session
 app.use((req, res, next) => {
