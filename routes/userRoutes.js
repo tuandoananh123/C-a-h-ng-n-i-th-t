@@ -4,7 +4,7 @@ const userController = require('../controllers/userController');
 const orderController = require('../controllers/orderController');
 const { protect } = require('../middlewares/authMiddleware');
 const User = require('../models/User');
-const bcrypt = require('bcrypt');
+const bcrypt = require('bcryptjs');
 
 // Public routes - authentication
 router.post('/register', userController.register);
