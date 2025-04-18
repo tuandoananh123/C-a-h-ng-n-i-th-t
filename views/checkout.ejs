@@ -1,0 +1,335 @@
+<%- include('./partials/header') %>
+
+<div class="container content-wrapper py-5">
+    <h1 class="mb-4">Thanh toán đơn hàng</h1>
+    
+    <!-- Alert Container -->
+    <div class="alert-container mb-4" id="checkout-alert-container"></div>
+    
+    <div class="row">
+        <div class="col-lg-8">
+            <!-- Thông tin giao hàng -->
+            <div class="card mb-4">
+                <div class="card-header bg-primary text-white">
+                    <h5 class="mb-0">Thông tin giao hàng</h5>
+                </div>
+                <div class="card-body">
+                    <form id="shipping-form">
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="fullName" class="form-label">Họ và tên *</label>
+                                <input type="text" class="form-control" id="fullName" required
+                                    value="<%= user ? user.fullName : '' %>">
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label for="phone" class="form-label">Số điện thoại *</label>
+                                <input type="tel" class="form-control" id="phone" required
+                                    value="<%= user ? user.phone : '' %>">
+                            </div>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="email" class="form-label">Email</label>
+                            <input type="email" class="form-control" id="email"
+                                value="<%= user ? user.email : '' %>">
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="address" class="form-label">Địa chỉ *</label>
+                            <input type="text" class="form-control" id="address" required
+                                value="<%= user ? user.address : '' %>">
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="notes" class="form-label">Ghi chú</label>
+                            <textarea class="form-control" id="notes" rows="3" placeholder="Ghi chú về đơn hàng, ví dụ: thời gian hay chỉ dẫn địa điểm giao hàng chi tiết hơn."></textarea>
+                        </div>
+                    </form>
+                </div>
+            </div>
+            
+            <!-- Phương thức thanh toán -->
+            <div class="card mb-4">
+                <div class="card-header bg-primary text-white">
+                    <h5 class="mb-0">Phương thức thanh toán</h5>
+                </div>
+                <div class="card-body">
+                    <div class="form-check mb-3">
+                        <input class="form-check-input" type="radio" name="paymentMethod" id="cod" value="cash" checked>
+                        <label class="form-check-label" for="cod">
+                            <i class="fas fa-money-bill-wave me-2"></i> Thanh toán khi nhận hàng (COD)
+                        </label>
+                    </div>
+                    
+                    <div class="form-check mb-3">
+                        <input class="form-check-input" type="radio" name="paymentMethod" id="banking" value="transfer">
+                        <label class="form-check-label" for="banking">
+                            <i class="fas fa-university me-2"></i> Chuyển khoản ngân hàng
+                        </label>
+                    </div>
+                    
+                    <div id="banking-info" class="mt-3 p-3 border rounded" style="display: none;">
+                        <p><strong>Thông tin chuyển khoản:</strong></p>
+                        <p>Ngân hàng: Vietcombank</p>
+                        <p>Số tài khoản:21097081</p>
+                        <p>Chủ tài khoản: Doan Anh Tuan</p>
+                        <p>Nội dung: [Họ tên] thanh toán đơn hàng</p>
+                    </div>
+                    
+                    <div class="form-check mb-3">
+                        <input class="form-check-input" type="radio" name="paymentMethod" id="momo" value="transfer">
+                        <label class="form-check-label" for="momo">
+                            <i class="fas fa-mobile-alt me-2"></i> Ví điện tử MoMo
+                        </label>
+                    </div>
+                    
+                    <div id="momo-info" class="mt-3 p-3 border rounded" style="display: none;">
+                        <p><strong>Thông tin chuyển khoản MoMo:</strong></p>
+                        <p>Số tài khoản: 068848172</p>
+                        <p>Tên tài khoản: Doan Anh Tuan</p>
+                        <p>Nội dung: [Họ tên] thanh toán đơn hàng</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-lg-4">
+            <!-- Đơn hàng của bạn -->
+            <div class="card mb-4">
+                <div class="card-header bg-primary text-white py-2">
+                    <h5 class="mb-0 fs-6">Đơn hàng của bạn</h5>
+                </div>
+                <div class="card-body p-3">
+                    <div id="order-items">
+                        <!-- Sản phẩm sẽ được hiển thị ở đây -->
+                        <div class="text-center py-3">
+                            <div class="spinner-border text-primary" role="status">
+                                <span class="visually-hidden">Loading...</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <hr class="my-2">
+                    
+                    <div class="d-flex justify-content-between mb-1">
+                        <span class="small">Tạm tính:</span>
+                        <span id="subtotal" class="small fw-semibold">0 đ</span>
+                    </div>
+                    <div class="d-flex justify-content-between mb-1">
+                        <span class="small">Phí giao hàng:</span>
+                        <span id="shipping-fee" class="small fw-semibold">30,000 đ</span>
+                    </div>
+                    <hr class="my-2">
+                    <div class="d-flex justify-content-between mb-3">
+                        <strong class="small">Tổng cộng:</strong>
+                        <strong id="total-amount">0 đ</strong>
+                    </div>
+                    
+                    <button id="place-order-btn" class="btn btn-primary w-100 py-2">
+                        <i class="fas fa-check me-2"></i> Đặt hàng
+                    </button>
+                    
+                    <div class="text-center mt-2">
+                        <a href="/cart" class="text-decoration-none small">
+                            <i class="fas fa-arrow-left me-1"></i> Quay lại giỏ hàng
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<%- include('./partials/footer') %>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Hiển thị thông tin ngân hàng khi chọn phương thức chuyển khoản
+    const bankingRadio = document.getElementById('banking');
+    const bankingInfo = document.getElementById('banking-info');
+    
+    bankingRadio.addEventListener('change', function() {
+        if (this.checked) {
+            bankingInfo.style.display = 'block';
+            momoInfo.style.display = 'none';
+        }
+    });
+    
+    // Hiển thị thông tin MoMo khi chọn phương thức MoMo
+    const momoRadio = document.getElementById('momo');
+    const momoInfo = document.getElementById('momo-info');
+    
+    momoRadio.addEventListener('change', function() {
+        if (this.checked) {
+            momoInfo.style.display = 'block';
+            bankingInfo.style.display = 'none';
+        }
+    });
+    
+    // Ẩn thông tin khi chọn phương thức khác
+    const codRadio = document.getElementById('cod');
+    
+    codRadio.addEventListener('change', function() {
+        if (this.checked) {
+            bankingInfo.style.display = 'none';
+            momoInfo.style.display = 'none';
+        }
+    });
+    
+    // Tải giỏ hàng từ API
+    loadCart();
+    
+    // Xử lý sự kiện đặt hàng
+    document.getElementById('place-order-btn').addEventListener('click', placeOrder);
+});
+
+// Tải giỏ hàng từ API
+async function loadCart() {
+    try {
+        const response = await fetch('/api/cart');
+        const data = await response.json();
+        
+        if (response.ok && data.success) {
+            displayOrderSummary(data.data);
+        } else {
+            showAlert('danger', 'Không thể tải giỏ hàng. ' + (data.error || 'Vui lòng thử lại sau.'));
+        }
+    } catch (error) {
+        console.error('Error loading cart:', error);
+        showAlert('danger', 'Đã xảy ra lỗi khi tải giỏ hàng. Vui lòng thử lại sau.');
+    }
+}
+
+// Hiển thị tóm tắt đơn hàng
+function displayOrderSummary(cart) {
+    const orderItems = document.getElementById('order-items');
+    const subtotal = document.getElementById('subtotal');
+    const totalAmount = document.getElementById('total-amount');
+    const placeOrderBtn = document.getElementById('place-order-btn');
+    
+    // Kiểm tra giỏ hàng trống
+    if (!cart.items || cart.items.length === 0) {
+        orderItems.innerHTML = `
+            <div class="text-center py-3">
+                <div class="alert alert-info">
+                    <i class="fas fa-shopping-cart me-2"></i> Giỏ hàng trống
+                </div>
+                <a href="/products" class="btn btn-primary">Tiếp tục mua sắm</a>
+            </div>
+        `;
+        placeOrderBtn.disabled = true;
+        return;
+    }
+    
+    // Hiển thị danh sách sản phẩm
+    let itemsHtml = '';
+    
+    cart.items.forEach(item => {
+        const product = item.product;
+        
+        itemsHtml += `
+            <div class="d-flex align-items-center mb-3">
+                <div class="me-3" style="width: 50px;">
+                    <img src="${product.images ? product.images[0] : '/images/default-product.jpg'}" alt="${product.name}" class="img-fluid rounded">
+                </div>
+                <div class="flex-grow-1 me-3">
+                    <h6 class="mb-1"><a href="/products/${product._id}">${product.name}</a></h6>
+                    <small class="text-muted">Mã: ${product._id}</small>
+                </div>
+                <div class="text-end">
+                    <p class="mb-1">${item.quantity} x ${product.price.toLocaleString('vi-VN')} đ</p>
+                    <p class="mb-0 fw-semibold">${(product.price * item.quantity).toLocaleString('vi-VN')} đ</p>
+                </div>
+            </div>
+        `;
+    });
+    
+    orderItems.innerHTML = itemsHtml;
+    
+    // Cập nhật tổng đơn hàng
+    subtotal.textContent = cart.totalAmount.toLocaleString('vi-VN') + ' đ';
+    
+    // Tính tổng tiền bao gồm phí giao hàng
+    const shippingFee = 30000; // 30,000đ
+    const total = cart.totalAmount + shippingFee;
+    totalAmount.textContent = total.toLocaleString('vi-VN') + ' đ';
+    
+    // Kích hoạt nút đặt hàng
+    placeOrderBtn.disabled = false;
+}
+
+// Xử lý đặt hàng
+async function placeOrder() {
+    // Kiểm tra form
+    const fullName = document.getElementById('fullName').value.trim();
+    const phone = document.getElementById('phone').value.trim();
+    const address = document.getElementById('address').value.trim();
+    
+    if (!fullName || !phone || !address) {
+        showAlert('warning', 'Vui lòng điền đầy đủ thông tin giao hàng.');
+        return;
+    }
+    
+    // Lấy thông tin đặt hàng
+    const email = document.getElementById('email').value.trim();
+    const notes = document.getElementById('notes').value.trim();
+    const paymentMethod = document.querySelector('input[name="paymentMethod"]:checked').value;
+    
+    // Hiển thị trạng thái đang xử lý
+    const placeOrderBtn = document.getElementById('place-order-btn');
+    const originalBtnText = placeOrderBtn.innerHTML;
+    placeOrderBtn.innerHTML = '<span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span> Đang xử lý...';
+    placeOrderBtn.disabled = true;
+    
+    try {
+        const response = await fetch('/api/checkout', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                shippingAddress: {
+                    fullName: fullName,
+                    phoneNumber: phone,
+                    street: address,
+                    city: 'Hồ Chí Minh',
+                    district: 'Quận 1',
+                    ward: 'Phường Bến Nghé'
+                },
+                paymentMethod: paymentMethod
+            })
+        });
+        
+        const data = await response.json();
+        
+        if (response.ok && data.success) {
+            // Chuyển hướng đến trang xác nhận đơn hàng
+            window.location.href = `/user/orders/${data.data._id}?success=true`;
+        } else {
+            // Hiển thị lỗi
+            showAlert('danger', data.error || 'Không thể đặt hàng. Vui lòng thử lại sau.');
+            placeOrderBtn.innerHTML = originalBtnText;
+            placeOrderBtn.disabled = false;
+        }
+    } catch (error) {
+        console.error('Error placing order:', error);
+        showAlert('danger', 'Đã xảy ra lỗi khi đặt hàng. Vui lòng thử lại sau.');
+        placeOrderBtn.innerHTML = originalBtnText;
+        placeOrderBtn.disabled = false;
+    }
+}
+
+// Hiển thị thông báo
+function showAlert(type, message) {
+    const alertContainer = document.getElementById('checkout-alert-container');
+    alertContainer.innerHTML = `
+        <div class="alert alert-${type} alert-dismissible fade show" role="alert">
+            ${message}
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+    `;
+    
+    // Cuộn lên đầu trang
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+</script>

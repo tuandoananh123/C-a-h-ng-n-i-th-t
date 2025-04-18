@@ -1,0 +1,83 @@
+<nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+  <div class="container">
+    <a class="navbar-brand" href="/">Household Goods Store</a>
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent"
+      aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+        <li class="nav-item">
+          <a class="nav-link" href="/">Trang chủ</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="/products">Sản phẩm</a>
+        </li>
+        <li class="nav-item dropdown">
+          <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown"
+            aria-expanded="false">
+            Danh mục
+          </a>
+          <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
+            <li><a class="dropdown-item" href="/products?category=Nhà bếp">Nhà bếp</a></li>
+            <li><a class="dropdown-item" href="/products?category=Đồ điện tử">Đồ điện tử</a></li>
+            <li><a class="dropdown-item" href="/products?category=Phòng ngủ">Phòng ngủ</a></li>
+            <li><a class="dropdown-item" href="/products?category=Phòng khách">Phòng khách</a></li>
+            <li><a class="dropdown-item" href="/products?category=Đồ nội thất">Đồ nội thất</a></li>
+          </ul>
+        </li>
+      </ul>
+
+      <!-- Search form -->
+      <form class="d-flex me-2" action="/products" method="GET">
+        <input class="form-control me-2" type="search" name="search" placeholder="Tìm kiếm sản phẩm..."
+          aria-label="Search">
+        <button class="btn btn-outline-light" type="submit">Tìm</button>
+      </form>
+
+      <!-- User menu -->
+      <div class="navbar-nav ms-auto">
+        <% if (user) { %>
+          <a class="nav-link" href="/cart">
+            <i class="fas fa-shopping-cart"></i> Giỏ hàng
+          </a>
+          <li class="nav-item dropdown">
+            <a class="nav-link dropdown-toggle" href="#" id="userDropdown" role="button" data-bs-toggle="dropdown"
+              aria-expanded="false">
+              <i class="fas fa-user"></i>
+              <%= user.fullName %>
+            </a>
+            <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userDropdown">
+              <li><a class="dropdown-item" href="/profile">Tài khoản</a></li>
+              <li><a class="dropdown-item" href="/orders">Đơn hàng</a></li>
+              <% if (user.role === 'admin') { %>
+                <li>
+                  <hr class="dropdown-divider">
+                </li>
+                <li>
+                  <a class="dropdown-item" href="/admin/dashboard">
+                    <i class="fas fa-tachometer-alt mr-2"></i> Quản trị viên
+                  </a>
+                </li>
+              <% } %>
+              <li>
+                <hr class="dropdown-divider">
+              </li>
+              <li>
+                <form action="/api/users/logout" method="POST">
+                  <button type="submit" class="dropdown-item">Đăng xuất</button>
+                </form>
+              </li>
+            </ul>
+          </li>
+          <% } else { %>
+            <a class="nav-link" href="/cart">
+              <i class="fas fa-shopping-cart"></i> Giỏ hàng
+            </a>
+            <a class="nav-link" href="/login">Đăng nhập</a>
+            <a class="nav-link" href="/register">Đăng ký</a>
+            <% } %>
+      </div>
+    </div>
+  </div>
+</nav>

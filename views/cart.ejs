@@ -1,0 +1,356 @@
+<%- include('./partials/header') %>
+
+<div class="container content-wrapper py-5">
+    <h1 class="mb-4">Giỏ hàng của bạn</h1>
+    
+    <!-- Alert Container -->
+    <div class="alert-container mb-4" id="cart-alert-container"></div>
+    
+    <div class="row">
+        <div class="col-lg-8">
+            <!-- Empty cart message -->
+            <div id="empty-cart-message" style="display: none;">
+                <div class="alert alert-info">
+                    <i class="fas fa-shopping-cart me-2"></i> Giỏ hàng của bạn đang trống.
+                </div>
+                <a href="/products" class="btn btn-primary">Tiếp tục mua sắm</a>
+            </div>
+            
+            <!-- Cart items -->
+            <div id="cart-items">
+                <div class="card mb-4">
+                    <div class="card-body p-0">
+                        <div class="table-responsive">
+                            <table class="table mb-0">
+                                <thead>
+                                    <tr>
+                                        <th class="border-top-0 ps-4" colspan="2">Sản phẩm</th>
+                                        <th class="border-top-0 text-center">Giá</th>
+                                        <th class="border-top-0 text-center">Số lượng</th>
+                                        <th class="border-top-0 text-center">Tổng</th>
+                                        <th class="border-top-0 text-center"></th>
+                                    </tr>
+                                </thead>
+                                <tbody id="cart-item-list">
+                                    <!-- Cart items will be loaded here -->
+                                    <tr>
+                                        <td colspan="6" class="text-center p-5">
+                                            <div class="spinner-border text-primary" role="status">
+                                                <span class="visually-hidden">Loading...</span>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="d-flex justify-content-between mb-5">
+                    <a href="/products" class="btn btn-outline-secondary">
+                        <i class="fas fa-arrow-left me-2"></i> Tiếp tục mua sắm
+                    </a>
+                    <button id="clear-cart-btn" class="btn btn-outline-danger">
+                        <i class="fas fa-trash me-2"></i> Xóa giỏ hàng
+                    </button>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-lg-4">
+            <!-- Cart summary -->
+            <div class="card" id="cart-summary">
+                <div class="card-header bg-primary text-white">
+                    <h5 class="mb-0">Tổng giỏ hàng</h5>
+                </div>
+                <div class="card-body">
+                    <div class="d-flex justify-content-between mb-3">
+                        <span>Tổng số lượng:</span>
+                        <span id="total-quantity">0</span>
+                    </div>
+                    <div class="d-flex justify-content-between mb-3">
+                        <span>Tạm tính:</span>
+                        <span id="subtotal">0 đ</span>
+                    </div>
+                    <div class="d-flex justify-content-between mb-3">
+                        <span>Phí giao hàng:</span>
+                        <span id="shipping-fee">30,000 đ</span>
+                    </div>
+                    <hr>
+                    <div class="d-flex justify-content-between mb-4">
+                        <strong>Tổng cộng:</strong>
+                        <strong id="total-amount">0 đ</strong>
+                    </div>
+                    <a href="/checkout" id="checkout-btn" class="btn btn-primary w-100">
+                        <i class="fas fa-credit-card me-2"></i> Thanh toán
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<%- include('./partials/footer') %>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    loadCart();
+    
+    // Xử lý sự kiện xóa giỏ hàng
+    document.getElementById('clear-cart-btn').addEventListener('click', clearCart);
+});
+
+// Tải giỏ hàng từ API
+async function loadCart() {
+    try {
+        const response = await fetch('/api/cart');
+        const data = await response.json();
+        
+        if (response.ok && data.success) {
+            displayCart(data.data);
+        } else {
+            showAlert('danger', 'Không thể tải giỏ hàng. ' + (data.error || 'Vui lòng thử lại sau.'));
+        }
+    } catch (error) {
+        console.error('Error loading cart:', error);
+        showAlert('danger', 'Đã xảy ra lỗi khi tải giỏ hàng. Vui lòng thử lại sau.');
+    }
+}
+
+// Hiển thị giỏ hàng
+function displayCart(cart) {
+    const emptyCartMessage = document.getElementById('empty-cart-message');
+    const cartItems = document.getElementById('cart-items');
+    const cartSummary = document.getElementById('cart-summary');
+    const cartItemList = document.getElementById('cart-item-list');
+    const totalQuantity = document.getElementById('total-quantity');
+    const subtotal = document.getElementById('subtotal');
+    const totalAmount = document.getElementById('total-amount');
+    const checkoutBtn = document.getElementById('checkout-btn');
+    
+    // Kiểm tra giỏ hàng trống
+    if (!cart.items || cart.items.length === 0) {
+        emptyCartMessage.style.display = 'block';
+        cartItems.style.display = 'none';
+        cartSummary.style.display = 'none';
+        return;
+    }
+    
+    // Hiển thị giỏ hàng
+    emptyCartMessage.style.display = 'none';
+    cartItems.style.display = 'block';
+    cartSummary.style.display = 'block';
+    
+    // Hiển thị danh sách sản phẩm
+    let itemsHtml = '';
+    
+    cart.items.forEach(item => {
+        const product = item.product;
+        
+        itemsHtml += `
+            <tr data-item-id="${item._id}">
+                <td class="ps-4" style="width: 100px;">
+                    <img src="${product.images ? product.images[0] : '/images/default-product.jpg'}" alt="${product.name}" class="img-fluid rounded">
+                </td>
+                <td>
+                    <h6 class="mb-1"><a href="/products/${product._id}">${product.name}</a></h6>
+                    <small class="text-muted">Mã: ${product._id}</small>
+                </td>
+                <td class="text-center">${product.price.toLocaleString('vi-VN')} đ</td>
+                <td class="text-center">
+                    <div class="d-flex justify-content-center">
+                        <div class="input-group" style="width: 100px;">
+                            <button class="btn btn-outline-secondary quantity-decrease" data-id="${item._id}" type="button" style="padding: 0 8px; font-size: 14px;">-</button>
+                            <input type="text" class="form-control text-center item-quantity" value="${item.quantity}" min="1" max="${product.stock}" data-id="${item._id}" style="padding: 0; width: 30px; appearance: none; font-size: 14px; border-left: none; border-right: none;">
+                            <button class="btn btn-outline-secondary quantity-increase" data-id="${item._id}" type="button" style="padding: 0 8px; font-size: 14px;">+</button>
+                        </div>
+                    </div>
+                </td>
+                <td class="text-center item-total">${(product.price * item.quantity).toLocaleString('vi-VN')} đ</td>
+                <td class="text-center">
+                    <button class="btn btn-sm btn-outline-danger remove-item" data-id="${item._id}">
+                        <i class="fas fa-trash"></i>
+                    </button>
+                </td>
+            </tr>
+        `;
+    });
+    
+    cartItemList.innerHTML = itemsHtml;
+    
+    // Cập nhật tổng giỏ hàng
+    totalQuantity.textContent = cart.totalQuantity;
+    subtotal.textContent = cart.totalAmount.toLocaleString('vi-VN') + ' đ';
+    
+    // Tính tổng tiền bao gồm phí giao hàng
+    const shippingFee = 30000; // 30,000đ
+    const total = cart.totalAmount + shippingFee;
+    totalAmount.textContent = total.toLocaleString('vi-VN') + ' đ';
+    
+    // Vô hiệu hóa nút thanh toán nếu giỏ hàng trống
+    checkoutBtn.disabled = cart.items.length === 0;
+    
+    // Thêm sự kiện cho các nút trong giỏ hàng
+    setupCartEvents();
+}
+
+// Thiết lập các sự kiện cho giỏ hàng
+function setupCartEvents() {
+    // Xử lý sự kiện tăng số lượng
+    document.querySelectorAll('.quantity-increase').forEach(button => {
+        button.addEventListener('click', function() {
+            const id = this.getAttribute('data-id');
+            const inputElement = document.querySelector(`.item-quantity[data-id="${id}"]`);
+            const currentValue = parseInt(inputElement.value);
+            const maxValue = parseInt(inputElement.getAttribute('max'));
+            
+            if (currentValue < maxValue) {
+                inputElement.value = currentValue + 1;
+                updateCartItem(id, currentValue + 1);
+            }
+        });
+    });
+    
+    // Xử lý sự kiện giảm số lượng
+    document.querySelectorAll('.quantity-decrease').forEach(button => {
+        button.addEventListener('click', function() {
+            const id = this.getAttribute('data-id');
+            const inputElement = document.querySelector(`.item-quantity[data-id="${id}"]`);
+            const currentValue = parseInt(inputElement.value);
+            
+            if (currentValue > 1) {
+                inputElement.value = currentValue - 1;
+                updateCartItem(id, currentValue - 1);
+            }
+        });
+    });
+    
+    // Xử lý sự kiện thay đổi số lượng trực tiếp
+    document.querySelectorAll('.item-quantity').forEach(input => {
+        input.addEventListener('change', function() {
+            const id = this.getAttribute('data-id');
+            const value = parseInt(this.value);
+            const maxValue = parseInt(this.getAttribute('max'));
+            
+            if (value < 1) {
+                this.value = 1;
+                updateCartItem(id, 1);
+            } else if (value > maxValue) {
+                this.value = maxValue;
+                updateCartItem(id, maxValue);
+            } else {
+                updateCartItem(id, value);
+            }
+        });
+    });
+    
+    // Xử lý sự kiện xóa sản phẩm
+    document.querySelectorAll('.remove-item').forEach(button => {
+        button.addEventListener('click', function() {
+            const id = this.getAttribute('data-id');
+            removeCartItem(id);
+        });
+    });
+}
+
+// Cập nhật số lượng sản phẩm trong giỏ hàng
+async function updateCartItem(itemId, quantity) {
+    try {
+        const response = await fetch('/api/cart/update', {
+            method: 'PUT',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                itemId,
+                quantity
+            })
+        });
+        
+        const data = await response.json();
+        
+        if (response.ok && data.success) {
+            // Cập nhật lại hiển thị giỏ hàng
+            displayCart(data.data);
+            showAlert('success', 'Cập nhật giỏ hàng thành công!');
+        } else {
+            showAlert('danger', 'Không thể cập nhật giỏ hàng. ' + (data.error || 'Vui lòng thử lại sau.'));
+        }
+    } catch (error) {
+        console.error('Error updating cart item:', error);
+        showAlert('danger', 'Đã xảy ra lỗi khi cập nhật giỏ hàng. Vui lòng thử lại sau.');
+    }
+}
+
+// Xóa sản phẩm khỏi giỏ hàng
+async function removeCartItem(itemId) {
+    if (!confirm('Bạn có chắc chắn muốn xóa sản phẩm này khỏi giỏ hàng?')) {
+        return;
+    }
+    
+    try {
+        const response = await fetch(`/api/cart/item/${itemId}`, {
+            method: 'DELETE'
+        });
+        
+        const data = await response.json();
+        
+        if (response.ok && data.success) {
+            // Cập nhật lại hiển thị giỏ hàng
+            displayCart(data.data);
+            showAlert('success', 'Đã xóa sản phẩm khỏi giỏ hàng!');
+        } else {
+            showAlert('danger', 'Không thể xóa sản phẩm. ' + (data.error || 'Vui lòng thử lại sau.'));
+        }
+    } catch (error) {
+        console.error('Error removing cart item:', error);
+        showAlert('danger', 'Đã xảy ra lỗi khi xóa sản phẩm. Vui lòng thử lại sau.');
+    }
+}
+
+// Xóa toàn bộ giỏ hàng
+async function clearCart() {
+    if (!confirm('Bạn có chắc chắn muốn xóa toàn bộ giỏ hàng?')) {
+        return;
+    }
+    
+    try {
+        const response = await fetch('/api/cart/clear', {
+            method: 'DELETE'
+        });
+        
+        const data = await response.json();
+        
+        if (response.ok && data.success) {
+            // Cập nhật lại hiển thị giỏ hàng
+            displayCart({ items: [], totalQuantity: 0, totalAmount: 0 });
+            showAlert('success', 'Đã xóa toàn bộ giỏ hàng!');
+        } else {
+            showAlert('danger', 'Không thể xóa giỏ hàng. ' + (data.error || 'Vui lòng thử lại sau.'));
+        }
+    } catch (error) {
+        console.error('Error clearing cart:', error);
+        showAlert('danger', 'Đã xảy ra lỗi khi xóa giỏ hàng. Vui lòng thử lại sau.');
+    }
+}
+
+// Hiển thị thông báo
+function showAlert(type, message) {
+    const alertContainer = document.getElementById('cart-alert-container');
+    alertContainer.innerHTML = `
+        <div class="alert alert-${type} alert-dismissible fade show" role="alert">
+            ${message}
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+    `;
+    
+    // Tự động ẩn thông báo sau 5 giây
+    setTimeout(() => {
+        const alert = alertContainer.querySelector('.alert');
+        if (alert) {
+            const bsAlert = new bootstrap.Alert(alert);
+            bsAlert.close();
+        }
+    }, 5000);
+}
+</script>

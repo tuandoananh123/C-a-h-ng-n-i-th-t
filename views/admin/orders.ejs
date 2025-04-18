@@ -1,0 +1,255 @@
+<%- include('../partials/head') %>
+    <title>Quản Trị - Quản Lý Đơn Hàng</title>
+    </head>
+
+    <body>
+        <%- include('../partials/header') %>
+
+            <div class="container-fluid p-0">
+                <div class="row g-0">
+                    <!-- Sidebar -->
+                    <div class="col-md-3 col-lg-2 admin-sidebar">
+                        <div class="p-4">
+                            <h4 class="mb-4 text-white">Admin Dashboard</h4>
+                            <div class="list-group list-group-flush">
+                                <a href="/admin/dashboard" class="list-group-item list-group-item-action">
+                                    <i class="fas fa-tachometer-alt me-2"></i> Tổng Quan
+                                </a>
+                                <a href="/admin/products" class="list-group-item list-group-item-action">
+                                    <i class="fas fa-box me-2"></i> Quản Lý Sản Phẩm
+                                </a>
+                                <a href="/admin/orders" class="list-group-item list-group-item-action active">
+                                    <i class="fas fa-shopping-cart me-2"></i> Quản Lý Đơn Hàng
+                                </a>
+                                <a href="/admin/users" class="list-group-item list-group-item-action">
+                                    <i class="fas fa-users me-2"></i> Quản Lý Người Dùng
+                                </a>
+                                <a href="/" class="list-group-item list-group-item-action">
+                                    <i class="fas fa-home me-2"></i> Quay Về Trang Chủ
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Main Content -->
+                    <div class="col-md-9 col-lg-10 admin-content">
+                        <div class="card mb-4">
+                            <div class="card-header bg-primary text-white">
+                                <h5 class="mb-0">Quản Lý Đơn Hàng</h5>
+                            </div>
+                            <div class="card-body">
+                                <% if(typeof message !=='undefined' ) { %>
+                                    <div class="alert alert-<%= message.type %> alert-dismissible fade show"
+                                        role="alert">
+                                        <%= message.text %>
+                                            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                                                <span aria-hidden="true">&times;</span>
+                                            </button>
+                                    </div>
+                                    <% } %>
+
+                                        <!-- Filter & Search -->
+                                        <div class="row mb-3">
+                                            <div class="col-md-4">
+                                                <select class="custom-select" id="statusFilter">
+                                                    <option value="">Tất cả trạng thái</option>
+                                                    <option value="processing">Đang xử lý</option>
+                                                    <option value="confirmed">Đã xác nhận</option>
+                                                    <option value="shipped">Đang giao hàng</option>
+                                                    <option value="delivered">Đã giao hàng</option>
+                                                    <option value="cancelled">Đã hủy</option>
+                                                </select>
+                                            </div>
+                                            <div class="col-md-8">
+                                                <div class="input-group">
+                                                    <input type="text" class="form-control"
+                                                        placeholder="Tìm kiếm đơn hàng..." id="searchOrder">
+                                                    <div class="input-group-append">
+                                                        <button class="btn btn-outline-secondary" type="button">
+                                                            <i class="fas fa-search"></i>
+                                                        </button>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <!-- Orders Table -->
+                                        <div class="table-responsive admin-products-table">
+                                            <table class="table table-striped table-hover">
+                                                <thead>
+                                                    <tr>
+                                                        <th>Mã Đơn</th>
+                                                        <th>Khách Hàng</th>
+                                                        <th>Tổng Tiền</th>
+                                                        <th>Phương Thức</th>
+                                                        <th>Trạng Thái</th>
+                                                        <th>Ngày Đặt</th>
+                                                        <th>Hành Động</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+                                                    <% if (orders && orders.length> 0) { %>
+                                                        <% orders.forEach(order=> { %>
+                                                            <tr>
+                                                                <td>
+                                                                    <%= order._id.toString().substring(0, 8) %>
+                                                                </td>
+                                                                <td>
+                                                                    <%= order.shippingAddress.fullName %>
+                                                                </td>
+                                                                <td>
+                                                                    <%= order.totalAmount.toLocaleString('vi-VN') %>₫
+                                                                </td>
+                                                                <td>
+                                                                    <span
+                                                                        class="badge <%= order.paymentMethod === 'cash' ? 'badge-secondary' : 'badge-primary' %>">
+                                                                        <%= order.paymentMethod==='cash' ? 'Tiền mặt'
+                                                                            : 'Chuyển khoản' %>
+                                                                    </span>
+                                                                </td>
+                                                                <td>
+                                                                    <% if (order.orderStatus==='processing' ) { %>
+                                                                        <span class="badge bg-warning text-dark">Đang xử
+                                                                            lý</span>
+                                                                        <% } else if (order.orderStatus==='confirmed' )
+                                                                            { %>
+                                                                            <span class="badge bg-info">Đã xác
+                                                                                nhận</span>
+                                                                            <% } else if (order.orderStatus==='shipped'
+                                                                                ) { %>
+                                                                                <span class="badge bg-primary">Đang vận
+                                                                                    chuyển</span>
+                                                                                <% } else if
+                                                                                    (order.orderStatus==='delivered' ) {
+                                                                                    %>
+                                                                                    <span class="badge bg-success">Đã
+                                                                                        giao hàng</span>
+                                                                                    <% } else if
+                                                                                        (order.orderStatus==='cancelled'
+                                                                                        ) { %>
+                                                                                        <span class="badge bg-danger">Đã
+                                                                                            hủy</span>
+                                                                                        <% } %>
+                                                                </td>
+                                                                <td>
+                                                                    <%= new
+                                                                        Date(order.orderDate).toLocaleDateString('vi-VN')
+                                                                        %>
+                                                                </td>
+                                                                <td>
+                                                                    <div class="btn-group" role="group">
+                                                                        <a href="/admin/orders/<%= order._id %>"
+                                                                            class="btn btn-sm btn-info">
+                                                                            <i class="fas fa-eye"></i>
+                                                                        </a>
+                                                                        <button
+                                                                            class="btn btn-sm btn-warning update-status"
+                                                                            data-id="<%= order._id %>"
+                                                                            data-status="<%= order.orderStatus %>"
+                                                                            data-toggle="modal"
+                                                                            data-target="#updateStatusModal">
+                                                                            <i class="fas fa-edit"></i>
+                                                                        </button>
+                                                                    </div>
+                                                                </td>
+                                                            </tr>
+                                                            <% }) %>
+                                                                <% } else { %>
+                                                                    <tr>
+                                                                        <td colspan="7" class="text-center">Không có đơn
+                                                                            hàng nào</td>
+                                                                    </tr>
+                                                                    <% } %>
+                                                </tbody>
+                                            </table>
+                                        </div>
+
+                                        <!-- Pagination -->
+                                        <% if (totalPages> 1) { %>
+                                            <nav aria-label="Phân trang">
+                                                <ul class="pagination justify-content-center">
+                                                    <li class="page-item <%= currentPage == 1 ? 'disabled' : '' %>">
+                                                        <a class="page-link"
+                                                            href="/admin/orders?page=<%= currentPage - 1 %>"
+                                                            tabindex="-1">Trước</a>
+                                                    </li>
+                                                    <% for(let i=1; i <=totalPages; i++) { %>
+                                                        <li class="page-item <%= currentPage == i ? 'active' : '' %>">
+                                                            <a class="page-link" href="/admin/orders?page=<%= i %>">
+                                                                <%= i %>
+                                                            </a>
+                                                        </li>
+                                                        <% } %>
+                                                            <li
+                                                                class="page-item <%= currentPage == totalPages ? 'disabled' : '' %>">
+                                                                <a class="page-link"
+                                                                    href="/admin/orders?page=<%= currentPage + 1 %>">Tiếp</a>
+                                                            </li>
+                                                </ul>
+                                            </nav>
+                                            <% } %>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Update Status Modal -->
+            <div class="modal fade" id="updateStatusModal" tabindex="-1" role="dialog"
+                aria-labelledby="updateStatusModalLabel" aria-hidden="true">
+                <div class="modal-dialog" role="document">
+                    <div class="modal-content">
+                        <div class="modal-header bg-warning">
+                            <h5 class="modal-title" id="updateStatusModalLabel">Cập Nhật Trạng Thái Đơn Hàng</h5>
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                <span aria-hidden="true">&times;</span>
+                            </button>
+                        </div>
+                        <form action="/admin/orders/update-status" method="POST" id="updateStatusForm">
+                            <div class="modal-body">
+                                <input type="hidden" id="order-id" name="id">
+                                <div class="form-group">
+                                    <label for="order-status">Trạng Thái Đơn Hàng</label>
+                                    <select class="form-control" id="order-status" name="status" required>
+                                        <option value="processing">Đang xử lý</option>
+                                        <option value="confirmed">Đã xác nhận</option>
+                                        <option value="shipped">Đang giao hàng</option>
+                                        <option value="delivered">Đã giao hàng</option>
+                                        <option value="cancelled">Đã hủy</option>
+                                    </select>
+                                </div>
+                                <div class="form-group">
+                                    <label for="order-note">Ghi chú (tùy chọn)</label>
+                                    <textarea class="form-control" id="order-note" name="note" rows="3"></textarea>
+                                </div>
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-secondary" data-dismiss="modal">Hủy</button>
+                                <button type="submit" class="btn btn-warning">Cập Nhật</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+
+            <script>
+                // Xử lý khi click nút cập nhật trạng thái
+                $('.update-status').click(function () {
+                    const id = $(this).data('id');
+                    const status = $(this).data('status');
+
+                    $('#order-id').val(id);
+                    $('#order-status').val(status);
+                });
+
+                // Xử lý lọc theo trạng thái
+                $('#statusFilter').change(function () {
+                    const status = $(this).val();
+                    window.location.href = '/admin/orders?status=' + status;
+                });
+            </script>
+
+            <%- include('../partials/footer') %>
+    </body>
+
+    </html>

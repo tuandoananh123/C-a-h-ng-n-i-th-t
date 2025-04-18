@@ -1,0 +1,15 @@
+Để ứng dụng hiển thị đúng, bạn cần thêm các hình ảnh sau vào thư mục này:
+
+- product-1.jpg
+- product-2.jpg
+- product-3.jpg
+- product-4.jpg 
+- product-5.jpg
+- product-6.jpg
+- product-7.jpg
+- product-8.jpg
+- hero-1.jpg
+- hero-2.jpg
+- hero-3.jpg
+
+Bạn có thể tải các hình ảnh từ trang web như Unsplash hoặc Pexels và đổi tên chúng theo yêu cầu.

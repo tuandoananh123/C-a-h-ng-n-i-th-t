@@ -1,0 +1,261 @@
+<%- include('../partials/head') %>
+<title>Quản Trị - Chi Tiết Đơn Hàng</title>
+</head>
+<body>
+    <%- include('../partials/header') %>
+    
+    <div class="container-fluid mt-4">
+        <div class="row">
+            <!-- Sidebar -->
+            <div class="col-md-3 col-lg-2">
+                <div class="card">
+                    <div class="card-header bg-primary text-white">
+                        <h5 class="mb-0">Quản Trị Viên</h5>
+                    </div>
+                    <div class="list-group list-group-flush">
+                        <a href="/admin/dashboard" class="list-group-item list-group-item-action">
+                            <i class="fas fa-tachometer-alt mr-2"></i> Tổng Quan
+                        </a>
+                        <a href="/admin/products" class="list-group-item list-group-item-action">
+                            <i class="fas fa-box mr-2"></i> Quản Lý Sản Phẩm
+                        </a>
+                        <a href="/admin/orders" class="list-group-item list-group-item-action active">
+                            <i class="fas fa-shopping-cart mr-2"></i> Quản Lý Đơn Hàng
+                        </a>
+                        <a href="/" class="list-group-item list-group-item-action text-danger">
+                            <i class="fas fa-sign-out-alt mr-2"></i> Quay Về Trang Chủ
+                        </a>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Main Content -->
+            <div class="col-md-9 col-lg-10">
+                <div class="card mb-4">
+                    <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
+                        <h5 class="mb-0">Chi Tiết Đơn Hàng #<%= order._id.toString().substring(0, 8) %></h5>
+                        <a href="/admin/orders" class="btn btn-light">
+                            <i class="fas fa-arrow-left mr-1"></i> Quay Lại
+                        </a>
+                    </div>
+                    <div class="card-body">
+                        <% if(typeof message !== 'undefined') { %>
+                            <div class="alert alert-<%= message.type %> alert-dismissible fade show" role="alert">
+                                <%= message.text %>
+                                <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                                    <span aria-hidden="true">&times;</span>
+                                </button>
+                            </div>
+                        <% } %>
+                        
+                        <div class="row">
+                            <!-- Order Info -->
+                            <div class="col-md-6">
+                                <div class="card mb-4">
+                                    <div class="card-header bg-info text-white">
+                                        <h6 class="mb-0">Thông Tin Đơn Hàng</h6>
+                                    </div>
+                                    <div class="card-body">
+                                        <table class="table table-borderless table-sm">
+                                            <tr>
+                                                <th width="40%">Mã Đơn Hàng:</th>
+                                                <td><strong><%= order._id %></strong></td>
+                                            </tr>
+                                            <tr>
+                                                <th>Ngày Đặt:</th>
+                                                <td><%= new Date(order.orderDate).toLocaleString('vi-VN') %></td>
+                                            </tr>
+                                            <tr>
+                                                <th>Tổng Tiền:</th>
+                                                <td class="text-danger"><strong><%= order.totalAmount.toLocaleString('vi-VN') %>₫</strong></td>
+                                            </tr>
+                                            <tr>
+                                                <th>Phương Thức Thanh Toán:</th>
+                                                <td>
+                                                    <span class="badge <%= order.paymentMethod === 'cash' ? 'badge-secondary' : 'badge-primary' %>">
+                                                        <%= order.paymentMethod === 'cash' ? 'Tiền mặt' : 'Chuyển khoản' %>
+                                                    </span>
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <th>Trạng Thái Thanh Toán:</th>
+                                                <td>
+                                                    <span class="badge <%= 
+                                                        order.paymentStatus === 'pending' ? 'badge-warning' : 
+                                                        order.paymentStatus === 'completed' ? 'badge-success' : 
+                                                        'badge-danger' 
+                                                    %>">
+                                                        <%= 
+                                                            order.paymentStatus === 'pending' ? 'Chờ thanh toán' : 
+                                                            order.paymentStatus === 'completed' ? 'Đã thanh toán' : 
+                                                            'Thất bại' 
+                                                        %>
+                                                    </span>
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <th>Trạng Thái Đơn Hàng:</th>
+                                                <td>
+                                                    <span class="badge <%= 
+                                                        order.orderStatus === 'processing' ? 'badge-warning' : 
+                                                        order.orderStatus === 'confirmed' ? 'badge-info' : 
+                                                        order.orderStatus === 'shipped' ? 'badge-primary' : 
+                                                        order.orderStatus === 'delivered' ? 'badge-success' : 
+                                                        'badge-danger' 
+                                                    %>">
+                                                        <%= 
+                                                            order.orderStatus === 'processing' ? 'Đang xử lý' : 
+                                                            order.orderStatus === 'confirmed' ? 'Đã xác nhận' : 
+                                                            order.orderStatus === 'shipped' ? 'Đang giao' : 
+                                                            order.orderStatus === 'delivered' ? 'Đã giao' : 
+                                                            'Đã hủy' 
+                                                        %>
+                                                    </span>
+                                                </td>
+                                            </tr>
+                                        </table>
+                                        
+                                        <div class="mt-3">
+                                            <button class="btn btn-warning btn-sm" data-toggle="modal" data-target="#updateStatusModal">
+                                                <i class="fas fa-edit mr-1"></i> Cập Nhật Trạng Thái
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- Customer Info -->
+                            <div class="col-md-6">
+                                <div class="card mb-4">
+                                    <div class="card-header bg-success text-white">
+                                        <h6 class="mb-0">Thông Tin Khách Hàng</h6>
+                                    </div>
+                                    <div class="card-body">
+                                        <table class="table table-borderless table-sm">
+                                            <tr>
+                                                <th width="30%">Tên:</th>
+                                                <td><strong><%= order.shippingAddress.fullName %></strong></td>
+                                            </tr>
+                                            <tr>
+                                                <th>Số Điện Thoại:</th>
+                                                <td><%= order.shippingAddress.phoneNumber %></td>
+                                            </tr>
+                                            <tr>
+                                                <th>Email:</th>
+                                                <td><%= user ? user.email : 'Không có thông tin' %></td>
+                                            </tr>
+                                            <tr>
+                                                <th>Địa Chỉ Giao Hàng:</th>
+                                                <td>
+                                                    <%= order.shippingAddress.street %>, 
+                                                    <%= order.shippingAddress.ward %>, 
+                                                    <%= order.shippingAddress.district %>, 
+                                                    <%= order.shippingAddress.city %>
+                                                </td>
+                                            </tr>
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Order Items -->
+                        <div class="card mt-3">
+                            <div class="card-header bg-primary text-white">
+                                <h6 class="mb-0">Sản Phẩm Đã Đặt</h6>
+                            </div>
+                            <div class="card-body p-0">
+                                <table class="table table-striped mb-0">
+                                    <thead>
+                                        <tr>
+                                            <th width="80">Ảnh</th>
+                                            <th>Sản Phẩm</th>
+                                            <th>Giá</th>
+                                            <th>Số Lượng</th>
+                                            <th>Thành Tiền</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <% order.items.forEach(item => { %>
+                                            <tr>
+                                                <td>
+                                                    <% if (productImages && productImages[item.product]) { %>
+                                                        <img src="<%= productImages[item.product] %>" class="img-thumbnail" style="max-width: 60px;" alt="<%= item.name %>">
+                                                    <% } else { %>
+                                                        <img src="/images/default-product.jpg" class="img-thumbnail" style="max-width: 60px;" alt="<%= item.name %>">
+                                                    <% } %>
+                                                </td>
+                                                <td>
+                                                    <a href="/products/<%= item.product %>" target="_blank"><%= item.name %></a>
+                                                </td>
+                                                <td><%= item.price.toLocaleString('vi-VN') %>₫</td>
+                                                <td><%= item.quantity %></td>
+                                                <td><%= item.totalPrice.toLocaleString('vi-VN') %>₫</td>
+                                            </tr>
+                                        <% }) %>
+                                        <tr class="table-info">
+                                            <td colspan="4" class="text-right"><strong>Tổng Cộng:</strong></td>
+                                            <td><strong class="text-danger"><%= order.totalAmount.toLocaleString('vi-VN') %>₫</strong></td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Update Status Modal -->
+    <div class="modal fade" id="updateStatusModal" tabindex="-1" role="dialog" aria-labelledby="updateStatusModalLabel" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header bg-warning">
+                    <h5 class="modal-title" id="updateStatusModalLabel">Cập Nhật Trạng Thái Đơn Hàng</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <form action="/admin/orders/update-status" method="POST">
+                    <div class="modal-body">
+                        <input type="hidden" name="id" value="<%= order._id %>">
+                        <input type="hidden" name="returnUrl" value="/admin/orders/<%= order._id %>">
+                        
+                        <div class="form-group">
+                            <label for="order-status">Trạng Thái Đơn Hàng</label>
+                            <select class="form-control" id="order-status" name="status" required>
+                                <option value="processing" <%= order.orderStatus === 'processing' ? 'selected' : '' %>>Đang xử lý</option>
+                                <option value="confirmed" <%= order.orderStatus === 'confirmed' ? 'selected' : '' %>>Đã xác nhận</option>
+                                <option value="shipped" <%= order.orderStatus === 'shipped' ? 'selected' : '' %>>Đang giao hàng</option>
+                                <option value="delivered" <%= order.orderStatus === 'delivered' ? 'selected' : '' %>>Đã giao hàng</option>
+                                <option value="cancelled" <%= order.orderStatus === 'cancelled' ? 'selected' : '' %>>Đã hủy</option>
+                            </select>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="payment-status">Trạng Thái Thanh Toán</label>
+                            <select class="form-control" id="payment-status" name="paymentStatus" required>
+                                <option value="pending" <%= order.paymentStatus === 'pending' ? 'selected' : '' %>>Chờ thanh toán</option>
+                                <option value="completed" <%= order.paymentStatus === 'completed' ? 'selected' : '' %>>Đã thanh toán</option>
+                                <option value="failed" <%= order.paymentStatus === 'failed' ? 'selected' : '' %>>Thất bại</option>
+                            </select>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="note">Ghi chú (tùy chọn)</label>
+                            <textarea class="form-control" id="note" name="note" rows="3"></textarea>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Hủy</button>
+                        <button type="submit" class="btn btn-warning">Cập Nhật</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    
+    <%- include('../partials/footer') %>
+</body>
+</html> 

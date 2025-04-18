@@ -1,0 +1,7 @@
+Đây là thư mục chứa hình ảnh cho các sản phẩm. Bạn cần thêm các hình ảnh sau:
+
+1. hero-1.jpg, hero-2.jpg, hero-3.jpg - cho carousel trang chủ
+2. category-kitchen.jpg, category-bathroom.jpg, category-bedroom.jpg, category-livingroom.jpg, category-electronics.jpg, category-furniture.jpg - cho các danh mục
+3. product-1.jpg, product-2.jpg, v.v. - cho hình ảnh sản phẩm
+
+Nếu bạn không có sẵn hình ảnh, bạn có thể sử dụng các dịch vụ như Unsplash hoặc Pexels để tải hình ảnh miễn phí.

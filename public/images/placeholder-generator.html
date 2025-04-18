@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Image Placeholder Generator</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        .container {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 20px;
+        }
+        .placeholder {
+            border: 1px solid #ddd;
+            padding: 10px;
+            text-align: center;
+        }
+        .placeholder img {
+            max-width: 100%;
+            height: auto;
+            margin-bottom: 10px;
+        }
+        .placeholder a {
+            display: block;
+            margin-top: 10px;
+            color: #0066cc;
+        }
+        h1, h2 {
+            color: #333;
+        }
+        .instructions {
+            background-color: #f5f5f5;
+            padding: 15px;
+            margin: 20px 0;
+            border-radius: 5px;
+        }
+    </style>
+</head>
+<body>
+    <h1>Tạo Placeholder cho hình ảnh sản phẩm</h1>
+    
+    <div class="instructions">
+        <h2>Hướng dẫn sử dụng:</h2>
+        <p>1. Nhấp chuột phải vào hình ảnh bạn muốn lưu</p>
+        <p>2. Chọn "Save image as..." (Lưu hình ảnh dưới dạng...)</p>
+        <p>3. Lưu với tên tương ứng (ví dụ: product-1.jpg)</p>
+        <p>4. Đặt tất cả hình ảnh vào thư mục /public/images</p>
+    </div>
+    
+    <div class="container">
+        <!-- Sản phẩm -->
+        <div class="placeholder">
+            <img src="https://via.placeholder.com/800x600/e6f2ff/333333?text=Noi+Com+Dien" alt="Nồi cơm điện thông minh">
+            <h3>Nồi cơm điện thông minh</h3>
+            <p>Lưu dưới tên: <strong>product-1.jpg</strong></p>
+            <a href="https://via.placeholder.com/800x600/e6f2ff/333333?text=Noi+Com+Dien" download="product-1.jpg">Tải xuống</a>
+        </div>
+        
+        <div class="placeholder">
+            <img src="https://via.placeholder.com/800x600/f0f5e6/333333?text=May+Loc+Khong+Khi" alt="Máy lọc không khí">
+            <h3>Máy lọc không khí</h3>
+            <p>Lưu dưới tên: <strong>product-2.jpg</strong></p>
+            <a href="https://via.placeholder.com/800x600/f0f5e6/333333?text=May+Loc+Khong+Khi" download="product-2.jpg">Tải xuống</a>
+        </div>
+        
+        <div class="placeholder">
+            <img src="https://via.placeholder.com/800x600/fff0f5/333333?text=Bo+Chan+Ga+Goi" alt="Bộ chăn ga gối cotton">
+            <h3>Bộ chăn ga gối cotton</h3>
+            <p>Lưu dưới tên: <strong>product-3.jpg</strong></p>
+            <a href="https://via.placeholder.com/800x600/fff0f5/333333?text=Bo+Chan+Ga+Goi" download="product-3.jpg">Tải xuống</a>
+        </div>
+        
+        <div class="placeholder">
+            <img src="https://via.placeholder.com/800x600/f5f5f0/333333?text=Ban+An+6+Nguoi" alt="Bàn ăn 6 người">
+            <h3>Bàn ăn 6 người</h3>
+            <p>Lưu dưới tên: <strong>product-4.jpg</strong></p>
+            <a href="https://via.placeholder.com/800x600/f5f5f0/333333?text=Ban+An+6+Nguoi" download="product-4.jpg">Tải xuống</a>
+        </div>
+        
+        <div class="placeholder">
+            <img src="https://via.placeholder.com/800x600/f5e6e6/333333?text=Bo+Dao+Nha+Bep" alt="Bộ dao nhà bếp">
+            <h3>Bộ dao nhà bếp</h3>
+            <p>Lưu dưới tên: <strong>product-5.jpg</strong></p>
+            <a href="https://via.placeholder.com/800x600/f5e6e6/333333?text=Bo+Dao+Nha+Bep" download="product-5.jpg">Tải xuống</a>
+        </div>
+        
+        <div class="placeholder">
+            <img src="https://via.placeholder.com/800x600/e6f5f5/333333?text=May+Giat+Tu+Dong" alt="Máy giặt tự động">
+            <h3>Máy giặt tự động</h3>
+            <p>Lưu dưới tên: <strong>product-6.jpg</strong></p>
+            <a href="https://via.placeholder.com/800x600/e6f5f5/333333?text=May+Giat+Tu+Dong" download="product-6.jpg">Tải xuống</a>
+        </div>
+        
+        <div class="placeholder">
+            <img src="https://via.placeholder.com/800x600/f5f0e6/333333?text=Den+Ngu+LED" alt="Đèn ngủ LED">
+            <h3>Đèn ngủ LED</h3>
+            <p>Lưu dưới tên: <strong>product-7.jpg</strong></p>
+            <a href="https://via.placeholder.com/800x600/f5f0e6/333333?text=Den+Ngu+LED" download="product-7.jpg">Tải xuống</a>
+        </div>
+        
+        <div class="placeholder">
+            <img src="https://via.placeholder.com/800x600/e6e6f5/333333?text=Sofa+Goc+Phong+Khach" alt="Sofa góc phòng khách">
+            <h3>Sofa góc phòng khách</h3>
+            <p>Lưu dưới tên: <strong>product-8.jpg</strong></p>
+            <a href="https://via.placeholder.com/800x600/e6e6f5/333333?text=Sofa+Goc+Phong+Khach" download="product-8.jpg">Tải xuống</a>
+        </div>
+        
+        <!-- Banner -->
+        <div class="placeholder" style="grid-column: span 2;">
+            <img src="https://via.placeholder.com/1920x600/e6f2ff/333333?text=Hero+Banner+1" alt="Banner chính">
+            <h3>Banner chính</h3>
+            <p>Lưu dưới tên: <strong>hero-1.jpg</strong></p>
+            <a href="https://via.placeholder.com/1920x600/e6f2ff/333333?text=Hero+Banner+1" download="hero-1.jpg">Tải xuống</a>
+        </div>
+        
+        <div class="placeholder" style="grid-column: span 2;">
+            <img src="https://via.placeholder.com/1920x600/f0f5e6/333333?text=Hero+Banner+2" alt="Banner khuyến mãi">
+            <h3>Banner khuyến mãi</h3>
+            <p>Lưu dưới tên: <strong>hero-2.jpg</strong></p>
+            <a href="https://via.placeholder.com/1920x600/f0f5e6/333333?text=Hero+Banner+2" download="hero-2.jpg">Tải xuống</a>
+        </div>
+        
+        <div class="placeholder" style="grid-column: span 2;">
+            <img src="https://via.placeholder.com/1920x600/fff0f5/333333?text=Hero+Banner+3" alt="Banner sản phẩm mới">
+            <h3>Banner sản phẩm mới</h3>
+            <p>Lưu dưới tên: <strong>hero-3.jpg</strong></p>
+            <a href="https://via.placeholder.com/1920x600/fff0f5/333333?text=Hero+Banner+3" download="hero-3.jpg">Tải xuống</a>
+        </div>
+    </div>
+</body>
+</html>

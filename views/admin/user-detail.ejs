@@ -1,0 +1,408 @@
+<%- include('../partials/head') %>
+    <style>
+        .admin-sidebar {
+            background-color: #343a40;
+            color: white;
+            min-height: 100vh;
+        }
+
+        .admin-content {
+            background-color: #f8f9fa;
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .list-group-item-action {
+            border-radius: 0;
+            border-left: 4px solid transparent;
+        }
+
+        .list-group-item-action.active {
+            background-color: #212529;
+            border-left: 4px solid #007bff;
+        }
+
+        .list-group-item-action:hover {
+            background-color: #2c3237;
+            border-left: 4px solid #007bff;
+        }
+
+        .card-header-custom {
+            background-color: #f8f9fa;
+            border-bottom: 1px solid rgba(0, 0, 0, .125);
+            font-weight: 600;
+        }
+
+        .user-info-card {
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
+        }
+
+        .info-label {
+            font-weight: 600;
+            color: #6c757d;
+        }
+
+        .orders-table th,
+        .orders-table td {
+            vertical-align: middle;
+        }
+
+        .badge-status {
+            font-size: 0.8rem;
+            padding: 5px 10px;
+            border-radius: 20px;
+        }
+
+        .dashboard-title {
+            font-weight: 700;
+            margin-bottom: 25px;
+            border-bottom: 2px solid #007bff;
+            padding-bottom: 10px;
+            display: inline-block;
+        }
+
+        .user-avatar {
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 5px solid #fff;
+            box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
+        }
+    </style>
+    </head>
+
+    <body>
+
+        <%- include('../partials/header') %>
+
+            <div class="container-fluid p-0">
+                <div class="row g-0">
+                    <!-- Sidebar -->
+                    <div class="col-md-3 col-lg-2 admin-sidebar">
+                        <div class="p-4">
+                            <h4 class="mb-4">Admin Dashboard</h4>
+                            <div class="list-group list-group-flush">
+                                <a href="/admin/dashboard" class="list-group-item list-group-item-action text-white">
+                                    <i class="fas fa-tachometer-alt me-2"></i> Tổng Quan
+                                </a>
+                                <a href="/admin/products" class="list-group-item list-group-item-action text-white">
+                                    <i class="fas fa-box me-2"></i> Quản Lý Sản Phẩm
+                                </a>
+                                <a href="/admin/orders" class="list-group-item list-group-item-action text-white">
+                                    <i class="fas fa-shopping-cart me-2"></i> Quản Lý Đơn Hàng
+                                </a>
+                                <a href="/admin/users" class="list-group-item list-group-item-action active text-white">
+                                    <i class="fas fa-users me-2"></i> Quản Lý Người Dùng
+                                </a>
+                                <a href="/" class="list-group-item list-group-item-action text-white">
+                                    <i class="fas fa-home me-2"></i> Quay Về Trang Chủ
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Main Content -->
+                    <div class="col-md-9 col-lg-10 admin-content">
+                        <div class="container py-4">
+                            <div class="d-flex justify-content-between align-items-center mb-4">
+                                <h2 class="dashboard-title">
+                                    <i class="fas fa-user me-2"></i> Thông Tin Người Dùng
+                                </h2>
+                                <a href="/admin/users" class="btn btn-outline-secondary">
+                                    <i class="fas fa-arrow-left me-2"></i> Quay lại
+                                </a>
+                            </div>
+
+                            <!-- Alert for messages -->
+                            <div id="alertMessage" class="alert d-none" role="alert"></div>
+
+                            <div class="row">
+                                <!-- User Info Card -->
+                                <div class="col-lg-5 mb-4">
+                                    <div class="card user-info-card h-100">
+                                        <div
+                                            class="card-header card-header-custom d-flex justify-content-between align-items-center">
+                                            <h5 class="mb-0">Thông tin cá nhân</h5>
+                                            <button class="btn btn-sm btn-primary" id="editUserBtn">
+                                                <i class="fas fa-edit me-1"></i> Chỉnh sửa
+                                            </button>
+                                        </div>
+                                        <div class="card-body">
+                                            <div class="text-center mb-4">
+                                                <img src="https://via.placeholder.com/120" alt="User Avatar"
+                                                    class="user-avatar mb-3">
+                                                <h4 class="mb-0">
+                                                    <%= userData.name %>
+                                                </h4>
+                                                <p class="text-muted">
+                                                    <%= userData.email %>
+                                                </p>
+                                                <span
+                                                    class="badge <%= userData.isAdmin ? 'bg-primary' : 'bg-secondary' %> badge-status">
+                                                    <%= userData.isAdmin ? 'Admin' : 'Người dùng' %>
+                                                </span>
+                                            </div>
+
+                                            <div class="mb-3">
+                                                <p class="info-label mb-1">ID người dùng:</p>
+                                                <p>
+                                                    <%= userData._id %>
+                                                </p>
+                                            </div>
+
+                                            <div class="mb-3">
+                                                <p class="info-label mb-1">Ngày đăng ký:</p>
+                                                <p>
+                                                    <%= new Date(userData.createdAt).toLocaleDateString('vi-VN', {
+                                                        year: 'numeric' , month: 'long' , day: 'numeric' }) %>
+                                                </p>
+                                            </div>
+
+                                            <div class="mb-3">
+                                                <p class="info-label mb-1">Cập nhật lần cuối:</p>
+                                                <p>
+                                                    <%= new Date(userData.updatedAt).toLocaleDateString('vi-VN', {
+                                                        year: 'numeric' , month: 'long' , day: 'numeric' }) %>
+                                                </p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Order Statistics and History -->
+                                <div class="col-lg-7 mb-4">
+                                    <div class="card user-info-card h-100">
+                                        <div class="card-header card-header-custom">
+                                            <h5 class="mb-0">Lịch sử đơn hàng</h5>
+                                        </div>
+                                        <div class="card-body">
+                                            <div class="row mb-4">
+                                                <div class="col-md-4 text-center mb-3 mb-md-0">
+                                                    <div class="p-3 bg-light rounded">
+                                                        <h3 class="mb-0">
+                                                            <%= userOrders.length %>
+                                                        </h3>
+                                                        <p class="text-muted mb-0">Tổng số đơn hàng</p>
+                                                    </div>
+                                                </div>
+                                                <div class="col-md-4 text-center mb-3 mb-md-0">
+                                                    <div class="p-3 bg-light rounded">
+                                                        <h3 class="mb-0">
+                                                            <%= userOrders.filter(order=> order.orderStatus ===
+                                                                'delivered').length %>
+                                                        </h3>
+                                                        <p class="text-muted mb-0">Đơn hàng đã giao</p>
+                                                    </div>
+                                                </div>
+                                                <div class="col-md-4 text-center">
+                                                    <div class="p-3 bg-light rounded">
+                                                        <h3 class="mb-0">
+                                                            <%= userOrders.reduce((total, order)=> total +
+                                                                order.totalAmount, 0).toLocaleString('vi-VN') %>₫
+                                                        </h3>
+                                                        <p class="text-muted mb-0">Tổng chi tiêu</p>
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                            <% if (userOrders && userOrders.length> 0) { %>
+                                                <div class="table-responsive">
+                                                    <table class="table table-hover mb-0 orders-table">
+                                                        <thead class="table-light">
+                                                            <tr>
+                                                                <th>Mã đơn</th>
+                                                                <th>Ngày đặt</th>
+                                                                <th>Tổng tiền</th>
+                                                                <th>Trạng thái</th>
+                                                                <th class="text-center">Chi tiết</th>
+                                                            </tr>
+                                                        </thead>
+                                                        <tbody>
+                                                            <% userOrders.forEach(order=> { %>
+                                                                <tr>
+                                                                    <td><span class="fw-bold">#<%=
+                                                                                order._id.toString().substring(0, 8) %>
+                                                                                </span></td>
+                                                                    <td>
+                                                                        <%= new
+                                                                            Date(order.orderDate).toLocaleDateString('vi-VN')
+                                                                            %>
+                                                                    </td>
+                                                                    <td><span class="fw-bold">
+                                                                            <%= order.totalAmount.toLocaleString('vi-VN')
+                                                                                %>₫
+                                                                        </span></td>
+                                                                    <td>
+                                                                        <span class="badge badge-status <%= 
+                                                                    order.orderStatus === 'processing' ? 'bg-warning' : 
+                                                                    order.orderStatus === 'confirmed' ? 'bg-info' : 
+                                                                    order.orderStatus === 'shipped' ? 'bg-primary' : 
+                                                                    order.orderStatus === 'delivered' ? 'bg-success' : 
+                                                                    'bg-danger' 
+                                                                %>">
+                                                                            <%= order.orderStatus==='processing'
+                                                                                ? 'Đang xử lý' :
+                                                                                order.orderStatus==='confirmed'
+                                                                                ? 'Đã xác nhận' :
+                                                                                order.orderStatus==='shipped'
+                                                                                ? 'Đang giao' :
+                                                                                order.orderStatus==='delivered'
+                                                                                ? 'Đã giao' : 'Đã hủy' %>
+                                                                        </span>
+                                                                    </td>
+                                                                    <td class="text-center">
+                                                                        <a href="/admin/orders/<%= order._id %>"
+                                                                            class="btn btn-sm btn-outline-primary">
+                                                                            <i class="fas fa-eye"></i>
+                                                                        </a>
+                                                                    </td>
+                                                                </tr>
+                                                                <% }) %>
+                                                        </tbody>
+                                                    </table>
+                                                </div>
+                                                <% } else { %>
+                                                    <div class="text-center py-5">
+                                                        <i class="fas fa-shopping-cart text-muted"
+                                                            style="font-size: 3rem;"></i>
+                                                        <p class="mt-3 text-muted">Người dùng này chưa có đơn hàng nào
+                                                        </p>
+                                                    </div>
+                                                    <% } %>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Edit User Modal -->
+            <div class="modal fade" id="editUserModal" tabindex="-1" aria-hidden="true">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title">Chỉnh sửa thông tin người dùng</h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <div class="modal-body">
+                            <form id="editUserForm">
+                                <div class="mb-3">
+                                    <label for="userName" class="form-label">Tên người dùng</label>
+                                    <input type="text" class="form-control" id="userName" value="<%= userData.name %>"
+                                        required>
+                                </div>
+                                <div class="mb-3">
+                                    <label for="userEmail" class="form-label">Email</label>
+                                    <input type="email" class="form-control" id="userEmail"
+                                        value="<%= userData.email %>" required>
+                                </div>
+                                <div class="mb-3">
+                                    <label for="userRole" class="form-label">Vai trò</label>
+                                    <select class="form-select" id="userRole">
+                                        <option value="false" <%=!userData.isAdmin ? 'selected' : '' %>>Người dùng
+                                        </option>
+                                        <option value="true" <%=userData.isAdmin ? 'selected' : '' %>>Admin</option>
+                                    </select>
+                                </div>
+                            </form>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Hủy</button>
+                            <button type="button" class="btn btn-primary" id="saveUserBtn">Lưu thay đổi</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <script>
+                document.addEventListener('DOMContentLoaded', function () {
+                    // Edit user modal
+                    const editUserModal = new bootstrap.Modal(document.getElementById('editUserModal'));
+
+                    // Open edit modal when edit button is clicked
+                    document.getElementById('editUserBtn').addEventListener('click', function () {
+                        editUserModal.show();
+                    });
+
+                    // Handle edit form submission
+                    document.getElementById('saveUserBtn').addEventListener('click', function () {
+                        const name = document.getElementById('userName').value;
+                        const email = document.getElementById('userEmail').value;
+                        const isAdmin = document.getElementById('userRole').value;
+
+                        // Validate form
+                        if (!name || !email) {
+                            showAlert('Vui lòng điền đầy đủ thông tin', 'danger');
+                            return;
+                        }
+
+                        // Send update request
+                        fetch('/admin/users/<%= userData._id %>/update', {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json'
+                            },
+                            body: JSON.stringify({ name, email, isAdmin })
+                        })
+                            .then(response => response.json())
+                            .then(data => {
+                                editUserModal.hide();
+
+                                if (data.success) {
+                                    // Success message
+                                    showAlert(data.message, 'success');
+
+                                    // Update user info on the page without refreshing
+                                    document.querySelector('h4.mb-0').textContent = name;
+                                    document.querySelector('p.text-muted').textContent = email;
+
+                                    const badgeElement = document.querySelector('.badge-status');
+                                    if (isAdmin === 'true') {
+                                        badgeElement.textContent = 'Admin';
+                                        badgeElement.className = 'badge bg-primary badge-status';
+                                    } else {
+                                        badgeElement.textContent = 'Người dùng';
+                                        badgeElement.className = 'badge bg-secondary badge-status';
+                                    }
+
+                                    // Refresh the page after a short delay
+                                    setTimeout(() => {
+                                        window.location.reload();
+                                    }, 1500);
+                                } else {
+                                    // Error message
+                                    showAlert(data.message, 'danger');
+                                }
+                            })
+                            .catch(error => {
+                                console.error('Error:', error);
+                                editUserModal.hide();
+                                showAlert('Có lỗi xảy ra khi cập nhật thông tin người dùng', 'danger');
+                            });
+                    });
+
+                    // Helper function to show alerts
+                    function showAlert(message, type) {
+                        const alertDiv = document.getElementById('alertMessage');
+                        alertDiv.classList.remove('d-none', 'alert-success', 'alert-danger');
+                        alertDiv.classList.add(`alert-${type}`);
+                        alertDiv.textContent = message;
+
+                        // Show alert
+                        alertDiv.classList.remove('d-none');
+
+                        // Hide alert after 3 seconds
+                        setTimeout(() => {
+                            alertDiv.classList.add('d-none');
+                        }, 3000);
+                    }
+                });
+            </script>
+    </body>
+
+    </html>
