@@ -68,7 +68,10 @@ app.use(session({
   },
   store: store,
   resave: false,
-  saveUninitialized: false
+  saveUninitialized: false,
+  store.on('error', function(error) {
+    console.error('Session store error:', error);
+  })
 }));
 
 // Middleware để debug session
