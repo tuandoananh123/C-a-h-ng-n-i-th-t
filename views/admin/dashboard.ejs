@@ -24,6 +24,12 @@
                         <a href="/admin/users" class="list-group-item list-group-item-action">
                             <i class="fas fa-users me-2"></i> Quản Lý Người Dùng
                         </a>
+<<<<<<< HEAD
+=======
+                        <a href="/admin/contacts" class="list-group-item list-group-item-action">
+                            <i class="fas fa-envelope me-2"></i> Tin Nhắn Liên Hệ
+                        </a>
+>>>>>>> 426465bb2903856af9056c99a1a6e192cacd2815
                         <a href="/" class="list-group-item list-group-item-action">
                             <i class="fas fa-home me-2"></i> Quay Về Trang Chủ
                         </a>
@@ -41,7 +47,11 @@
                     
                     <!-- Stats Cards -->
                     <div class="row mt-4 mb-4">
+<<<<<<< HEAD
                         <div class="col-md-4 mb-3">
+=======
+                        <div class="col-md-3 mb-3">
+>>>>>>> 426465bb2903856af9056c99a1a6e192cacd2815
                             <div class="card stats-card shadow-sm border-0 h-100 overflow-hidden">
                                 <div class="card-body position-relative p-0">
                                     <div class="stats-icon bg-primary-subtle position-absolute top-0 end-0 m-3 rounded-circle d-flex align-items-center justify-content-center">
@@ -60,7 +70,11 @@
                             </div>
                         </div>
                         
+<<<<<<< HEAD
                         <div class="col-md-4 mb-3">
+=======
+                        <div class="col-md-3 mb-3">
+>>>>>>> 426465bb2903856af9056c99a1a6e192cacd2815
                             <div class="card stats-card shadow-sm border-0 h-100 overflow-hidden">
                                 <div class="card-body position-relative p-0">
                                     <div class="stats-icon bg-success-subtle position-absolute top-0 end-0 m-3 rounded-circle d-flex align-items-center justify-content-center">
@@ -79,7 +93,11 @@
                             </div>
                         </div>
                         
+<<<<<<< HEAD
                         <div class="col-md-4 mb-3">
+=======
+                        <div class="col-md-3 mb-3">
+>>>>>>> 426465bb2903856af9056c99a1a6e192cacd2815
                             <div class="card stats-card shadow-sm border-0 h-100 overflow-hidden">
                                 <div class="card-body position-relative p-0">
                                     <div class="stats-icon bg-warning-subtle position-absolute top-0 end-0 m-3 rounded-circle d-flex align-items-center justify-content-center">
@@ -97,6 +115,34 @@
                                 </div>
                             </div>
                         </div>
+<<<<<<< HEAD
+=======
+                        
+                        <div class="col-md-3 mb-3">
+                            <div class="card stats-card shadow-sm border-0 h-100 overflow-hidden">
+                                <div class="card-body position-relative p-0">
+                                    <div class="stats-icon bg-danger-subtle position-absolute top-0 end-0 m-3 rounded-circle d-flex align-items-center justify-content-center">
+                                        <i class="fas fa-envelope text-danger"></i>
+                                    </div>
+                                    <div class="p-4 pb-5">
+                                        <h6 class="text-muted mb-1 fw-semibold">Tin Nhắn Chưa Đọc</h6>
+                                        <h2 class="mb-0 display-6 fw-bold">
+                                            <% if (typeof unreadContactCount !== 'undefined') { %>
+                                                <%= unreadContactCount %>
+                                            <% } else { %>
+                                                0
+                                            <% } %>
+                                        </h2>
+                                    </div>
+                                    <div class="card-footer w-100 bg-danger text-white border-0 py-2 position-absolute bottom-0">
+                                        <a href="/admin/contacts" class="text-white small text-decoration-none d-flex align-items-center justify-content-between">
+                                            <span>Xem ngay</span> <i class="fas fa-arrow-right"></i>
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+>>>>>>> 426465bb2903856af9056c99a1a6e192cacd2815
                     </div>
 
                     <!-- Charts -->
@@ -240,7 +286,11 @@
             data: {
                 labels: ['Đang xử lý', 'Đã xác nhận', 'Đang giao', 'Đã giao', 'Đã hủy'],
                 datasets: [{
+<<<<<<< HEAD
                     data: [<%= newOrderCount %>, <%= Math.floor(Math.random() * 10) + 5 %>, <%= Math.floor(Math.random() * 8) + 3 %>, <%= Math.floor(Math.random() * 20) + 10 %>, <%= Math.floor(Math.random() * 5) + 1 %>],
+=======
+                    data: [5, 8, 3, 15, 2], // Dữ liệu mẫu cố định
+>>>>>>> 426465bb2903856af9056c99a1a6e192cacd2815
                     backgroundColor: [
                         '#ffc107', // warning
                         '#0dcaf0', // info

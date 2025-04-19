@@ -7,8 +7,14 @@ const Category = require('../models/Category');
 const mongoose = require('mongoose');
 const orderController = require('../controllers/orderController');
 const productController = require('../controllers/productController');
+<<<<<<< HEAD
 const { protect, admin, isAuth } = require('../middlewares/authMiddleware');
 const userController = require('../controllers/userController');
+=======
+const { protect, admin, isAuth, authorize } = require('../middlewares/authMiddleware');
+const userController = require('../controllers/userController');
+const contactController = require('../controllers/contactController');
+>>>>>>> 426465bb2903856af9056c99a1a6e192cacd2815
 
 // Middleware kiểm tra đăng nhập
 const checkAuth = (req, res, next) => {
@@ -225,6 +231,7 @@ router.get('/profile', checkAuth, async (req, res) => {
 });
 
 // Admin Routes
+<<<<<<< HEAD
 router.get('/admin', protect, admin, (req, res) => {
   res.redirect('/admin/dashboard');
 });
@@ -246,5 +253,230 @@ router.get('/admin/users', protect, admin, userController.getAdminUsers);
 router.get('/admin/users/:id', protect, admin, userController.getAdminUserDetail);
 router.post('/admin/users/:id/update', protect, admin, userController.updateUser);
 router.post('/admin/users/delete', protect, admin, userController.deleteUser);
+=======
+router.get('/admin', protect, authorize('admin'), (req, res) => {
+  res.redirect('/admin/dashboard');
+});
+
+router.get('/admin/dashboard', protect, authorize('admin'), (req, res) => {
+  try {
+    // Gọi controller method nếu tồn tại, hoặc sử dụng phương thức mặc định
+    if (typeof orderController.getAdminDashboard === 'function') {
+      orderController.getAdminDashboard(req, res);
+    } else {
+      res.render('admin/dashboard', {
+        title: 'Bảng điều khiển',
+        user: req.session.user
+      });
+    }
+  } catch (error) {
+    console.error('Dashboard error:', error);
+    res.status(500).render('error', { 
+      title: 'Lỗi Server',
+      message: 'Lỗi khi tải trang bảng điều khiển',
+      user: req.session.user
+    });
+  }
+});
+
+// Admin Product Routes
+router.get('/admin/products', protect, authorize('admin'), (req, res) => {
+  try {
+    // Gọi controller method nếu tồn tại, hoặc sử dụng phương thức mặc định
+    if (typeof productController.getAdminProducts === 'function') {
+      productController.getAdminProducts(req, res);
+    } else {
+      res.render('admin/products', {
+        title: 'Quản lý sản phẩm',
+        user: req.session.user
+      });
+    }
+  } catch (error) {
+    console.error('Admin products error:', error);
+    res.status(500).render('error', { 
+      title: 'Lỗi Server',
+      message: 'Lỗi khi tải trang quản lý sản phẩm',
+      user: req.session.user
+    });
+  }
+});
+
+router.get('/admin/products/add', protect, authorize('admin'), (req, res) => {
+  try {
+    // Gọi controller method nếu tồn tại, hoặc sử dụng phương thức mặc định
+    if (typeof productController.getAddProductPage === 'function') {
+      productController.getAddProductPage(req, res);
+    } else {
+      res.render('admin/add-product', {
+        title: 'Thêm sản phẩm mới',
+        user: req.session.user
+      });
+    }
+  } catch (error) {
+    console.error('Add product error:', error);
+    res.status(500).render('error', { 
+      title: 'Lỗi Server',
+      message: 'Lỗi khi tải trang thêm sản phẩm',
+      user: req.session.user
+    });
+  }
+});
+
+router.get('/admin/products/edit/:id', protect, authorize('admin'), (req, res) => {
+  try {
+    // Gọi controller method nếu tồn tại, hoặc sử dụng phương thức mặc định
+    if (typeof productController.getEditProductPage === 'function') {
+      productController.getEditProductPage(req, res);
+    } else {
+      const { id } = req.params;
+      // Tìm sản phẩm theo ID
+      Product.findById(id)
+        .then(product => {
+          if (!product) {
+            return res.status(404).render('error', {
+              title: 'Không tìm thấy',
+              message: 'Không tìm thấy sản phẩm',
+              user: req.session.user
+            });
+          }
+          
+          // Lấy danh sách danh mục
+          Category.find().sort({ name: 1 })
+            .then(categories => {
+              res.render('admin/edit-product', {
+                title: 'Chỉnh sửa sản phẩm',
+                product,
+                categories,
+                user: req.session.user
+              });
+            });
+        })
+        .catch(error => {
+          console.error('Error finding product:', error);
+          res.status(500).render('error', {
+            title: 'Lỗi Server',
+            message: 'Lỗi khi tìm sản phẩm',
+            user: req.session.user
+          });
+        });
+    }
+  } catch (error) {
+    console.error('Edit product error:', error);
+    res.status(500).render('error', { 
+      title: 'Lỗi Server',
+      message: 'Lỗi khi tải trang chỉnh sửa sản phẩm',
+      user: req.session.user
+    });
+  }
+});
+
+// Admin Order Routes - Sử dụng try-catch để bắt lỗi
+router.get('/admin/orders', protect, authorize('admin'), (req, res) => {
+  try {
+    // Gọi controller method nếu tồn tại, hoặc sử dụng phương thức mặc định
+    if (typeof orderController.getAdminOrders === 'function') {
+      orderController.getAdminOrders(req, res);
+    } else {
+      res.render('admin/orders', {
+        title: 'Quản lý đơn hàng',
+        user: req.session.user
+      });
+    }
+  } catch (error) {
+    console.error('Admin orders error:', error);
+    res.status(500).render('error', { 
+      title: 'Lỗi Server',
+      message: 'Lỗi khi tải trang quản lý đơn hàng',
+      user: req.session.user
+    });
+  }
+});
+
+router.get('/admin/orders/:id', protect, authorize('admin'), (req, res) => {
+  try {
+    // Gọi controller method nếu tồn tại, hoặc sử dụng phương thức mặc định
+    if (typeof orderController.getOrderDetails === 'function') {
+      orderController.getOrderDetails(req, res);
+    } else {
+      res.render('admin/order-detail', {
+        title: 'Chi tiết đơn hàng',
+        user: req.session.user
+      });
+    }
+  } catch (error) {
+    console.error('Order details error:', error);
+    res.status(500).render('error', { 
+      title: 'Lỗi Server',
+      message: 'Lỗi khi tải trang chi tiết đơn hàng',
+      user: req.session.user
+    });
+  }
+});
+
+// Admin User Management Routes
+router.get('/admin/users', protect, authorize('admin'), (req, res) => {
+  try {
+    // Gọi controller method nếu tồn tại, hoặc sử dụng phương thức mặc định
+    if (typeof userController.getAdminUsers === 'function') {
+      userController.getAdminUsers(req, res);
+    } else {
+      res.render('admin/users', {
+        title: 'Quản lý người dùng',
+        user: req.session.user
+      });
+    }
+  } catch (error) {
+    console.error('Admin users error:', error);
+    res.status(500).render('error', { 
+      title: 'Lỗi Server',
+      message: 'Lỗi khi tải trang quản lý người dùng',
+      user: req.session.user
+    });
+  }
+});
+
+router.get('/admin/users/:id', protect, authorize('admin'), (req, res) => {
+  try {
+    // Gọi controller method nếu tồn tại, hoặc sử dụng phương thức mặc định
+    if (typeof userController.getAdminUserDetail === 'function') {
+      userController.getAdminUserDetail(req, res);
+    } else {
+      res.render('admin/user-detail', {
+        title: 'Chi tiết người dùng',
+        user: req.session.user
+      });
+    }
+  } catch (error) {
+    console.error('User detail error:', error);
+    res.status(500).render('error', { 
+      title: 'Lỗi Server',
+      message: 'Lỗi khi tải trang chi tiết người dùng',
+      user: req.session.user
+    });
+  }
+});
+
+// Admin Contact Management Routes
+router.get('/admin/contacts', protect, authorize('admin'), (req, res) => {
+  try {
+    // Gọi controller method nếu tồn tại, hoặc sử dụng phương thức mặc định
+    if (typeof contactController.getContactsPage === 'function') {
+      contactController.getContactsPage(req, res);
+    } else {
+      res.render('admin/contacts', {
+        title: 'Quản lý liên hệ',
+        user: req.session.user
+      });
+    }
+  } catch (error) {
+    console.error('Contacts page error:', error);
+    res.status(500).render('error', { 
+      title: 'Lỗi Server',
+      message: 'Lỗi khi tải trang quản lý liên hệ',
+      user: req.session.user
+    });
+  }
+});
+>>>>>>> 426465bb2903856af9056c99a1a6e192cacd2815
 
 module.exports = router;

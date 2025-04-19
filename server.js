@@ -63,7 +63,11 @@ app.use(session({
   cookie: {
     maxAge: 1000 * 60 * 60 * 24 * 7, // 1 week
     httpOnly: true,
+<<<<<<< HEAD
     secure: process.env.NODE_ENV === 'production',
+=======
+    secure: false, // Always set to false to allow HTTP cookies
+>>>>>>> 426465bb2903856af9056c99a1a6e192cacd2815
     sameSite: 'lax'
   },
   store: store,
@@ -71,6 +75,14 @@ app.use(session({
   saveUninitialized: false
 }));
 
+<<<<<<< HEAD
+=======
+// Move session store error handling outside the session configuration
+store.on('error', function(error) {
+  console.error('Session store error:', error);
+});
+
+>>>>>>> 426465bb2903856af9056c99a1a6e192cacd2815
 // Middleware để debug session
 app.use((req, res, next) => {
   console.log('Session ID:', req.sessionID);
@@ -90,6 +102,10 @@ const checkoutRoutes = require('./routes/checkoutRoutes');
 const categoryRoutes = require('./routes/categoryRoutes');
 const viewRoutes = require('./routes/viewRoutes');
 const orderRoutes = require('./routes/orderRoutes');
+<<<<<<< HEAD
+=======
+const contactRoutes = require('./routes/contactRoutes');
+>>>>>>> 426465bb2903856af9056c99a1a6e192cacd2815
 
 // API routes
 app.use('/api/products', productRoutes);
@@ -98,6 +114,10 @@ app.use('/api/cart', cartRoutes);
 app.use('/api/checkout', checkoutRoutes);
 app.use('/api/categories', categoryRoutes);
 app.use('/api/orders', orderRoutes);
+<<<<<<< HEAD
+=======
+app.use('/api/contact', contactRoutes);
+>>>>>>> 426465bb2903856af9056c99a1a6e192cacd2815
 
 // ✅ Sử dụng route đơn hàng
 app.use('/', orderRoutes);

@@ -460,3 +460,63 @@ exports.getAdminProducts = async (req, res) => {
     });
   }
 };
+<<<<<<< HEAD
+=======
+
+// Admin: Hiển thị trang thêm sản phẩm mới
+exports.getAddProductPage = async (req, res) => {
+  try {
+    // Lấy danh sách các danh mục
+    const categories = await Category.find().sort({ name: 1 });
+    
+    res.render('admin/add-product', {
+      title: 'Thêm Sản Phẩm Mới',
+      categories,
+      user: req.session.user || null
+    });
+  } catch (error) {
+    console.error('Error loading add product page:', error);
+    res.status(500).render('error', {
+      title: 'Lỗi Server',
+      message: 'Có lỗi xảy ra khi tải trang thêm sản phẩm',
+      error,
+      user: req.session.user || null
+    });
+  }
+};
+
+// Admin: Hiển thị trang chỉnh sửa sản phẩm
+exports.getEditProductPage = async (req, res) => {
+  try {
+    const { id } = req.params;
+    
+    // Tìm sản phẩm theo ID
+    const product = await Product.findById(id);
+    if (!product) {
+      return res.status(404).render('error', {
+        title: 'Không tìm thấy',
+        message: 'Không tìm thấy sản phẩm cần chỉnh sửa',
+        user: req.session.user || null
+      });
+    }
+    
+    // Lấy danh sách các danh mục
+    const categories = await Category.find().sort({ name: 1 });
+    
+    res.render('admin/edit-product', {
+      title: 'Chỉnh Sửa Sản Phẩm',
+      product,
+      categories,
+      user: req.session.user || null
+    });
+  } catch (error) {
+    console.error('Error loading edit product page:', error);
+    res.status(500).render('error', {
+      title: 'Lỗi Server',
+      message: 'Có lỗi xảy ra khi tải trang chỉnh sửa sản phẩm',
+      error,
+      user: req.session.user || null
+    });
+  }
+};
+>>>>>>> 426465bb2903856af9056c99a1a6e192cacd2815

@@ -87,6 +87,7 @@
               <div class="card border-0 shadow-sm h-100">
                 <div class="card-body p-4 p-md-5">
                   <h4 class="mb-4">Gửi tin nhắn cho chúng tôi</h4>
+<<<<<<< HEAD
                   <form>
                     <div class="row">
                       <div class="col-md-6 mb-3">
@@ -96,21 +97,48 @@
                       <div class="col-md-6 mb-3">
                         <label for="email" class="form-label">Email</label>
                         <input type="email" class="form-control" id="email" placeholder="Nhập email của bạn">
+=======
+                  
+                  <!-- Thông báo kết quả gửi tin nhắn -->
+                  <div id="contactFormAlert" class="alert" style="display: none;"></div>
+                  
+                  <form id="contactForm">
+                    <div class="row">
+                      <div class="col-md-6 mb-3">
+                        <label for="name" class="form-label">Họ tên</label>
+                        <input type="text" class="form-control" id="name" name="name" placeholder="Nhập họ tên của bạn" required>
+                      </div>
+                      <div class="col-md-6 mb-3">
+                        <label for="email" class="form-label">Email</label>
+                        <input type="email" class="form-control" id="email" name="email" placeholder="Nhập email của bạn" required>
+>>>>>>> 426465bb2903856af9056c99a1a6e192cacd2815
                       </div>
                     </div>
 
                     <div class="mb-3">
                       <label for="subject" class="form-label">Tiêu đề</label>
+<<<<<<< HEAD
                       <input type="text" class="form-control" id="subject" placeholder="Nhập tiêu đề">
+=======
+                      <input type="text" class="form-control" id="subject" name="subject" placeholder="Nhập tiêu đề" required>
+>>>>>>> 426465bb2903856af9056c99a1a6e192cacd2815
                     </div>
 
                     <div class="mb-4">
                       <label for="message" class="form-label">Tin nhắn</label>
+<<<<<<< HEAD
                       <textarea class="form-control" id="message" rows="5"
                         placeholder="Nhập nội dung tin nhắn"></textarea>
                     </div>
 
                     <button type="submit" class="btn btn-primary">Gửi tin nhắn</button>
+=======
+                      <textarea class="form-control" id="message" name="message" rows="5"
+                        placeholder="Nhập nội dung tin nhắn" required></textarea>
+                    </div>
+
+                    <button type="submit" class="btn btn-primary" id="submitContactBtn">Gửi tin nhắn</button>
+>>>>>>> 426465bb2903856af9056c99a1a6e192cacd2815
                   </form>
                 </div>
               </div>
@@ -228,4 +256,81 @@
     }
   </style>
 
+<<<<<<< HEAD
+=======
+  <!-- JavaScript cho form liên hệ -->
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      const contactForm = document.getElementById('contactForm');
+      const alertElement = document.getElementById('contactFormAlert');
+      
+      if (contactForm) {
+        contactForm.addEventListener('submit', async function(e) {
+          e.preventDefault();
+          
+          // Disable submit button
+          const submitBtn = document.getElementById('submitContactBtn');
+          submitBtn.disabled = true;
+          submitBtn.innerHTML = '<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Đang gửi...';
+          
+          // Get form data
+          const formData = {
+            name: document.getElementById('name').value,
+            email: document.getElementById('email').value,
+            subject: document.getElementById('subject').value,
+            message: document.getElementById('message').value
+          };
+          
+          try {
+            const response = await fetch('/api/contact', {
+              method: 'POST',
+              headers: {
+                'Content-Type': 'application/json'
+              },
+              body: JSON.stringify(formData)
+            });
+            
+            const result = await response.json();
+            
+            if (result.success) {
+              // Show success message
+              alertElement.className = 'alert alert-success';
+              alertElement.textContent = 'Cảm ơn bạn đã liên hệ với chúng tôi';
+              alertElement.style.display = 'block';
+              
+              // Reset form
+              contactForm.reset();
+            } else {
+              // Show error message
+              alertElement.className = 'alert alert-danger';
+              alertElement.textContent = result.message || 'Đã có lỗi xảy ra, vui lòng thử lại sau';
+              alertElement.style.display = 'block';
+            }
+          } catch (error) {
+            // Show error message
+            alertElement.className = 'alert alert-danger';
+            alertElement.textContent = 'Đã có lỗi xảy ra, vui lòng thử lại sau';
+            alertElement.style.display = 'block';
+            console.error('Error submitting contact form:', error);
+          } finally {
+            // Enable submit button
+            submitBtn.disabled = false;
+            submitBtn.innerHTML = 'Gửi tin nhắn';
+            
+            // Scroll to the alert
+            alertElement.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            
+            // Hide alert after 5 seconds if it's a success message
+            if (alertElement.classList.contains('alert-success')) {
+              setTimeout(() => {
+                alertElement.style.display = 'none';
+              }, 5000);
+            }
+          }
+        });
+      }
+    });
+  </script>
+
+>>>>>>> 426465bb2903856af9056c99a1a6e192cacd2815
   <%- include('./partials/footer') %>

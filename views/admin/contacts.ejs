@@ -1,0 +1,463 @@
+<%- include('../partials/head') %>
+<style>
+    body {
+        font-family: 'Roboto', sans-serif;
+        background-color: #f5f5f5;
+    }
+
+    .admin-sidebar {
+        background-color: #2c3e50;
+        color: white;
+        min-height: 100vh;
+        padding-top: 20px;
+        box-shadow: 2px 0 10px rgba(0, 0, 0, 0.1);
+    }
+
+    .admin-content {
+        background-color: #f8f9fa;
+        min-height: 100vh;
+        padding: 20px;
+    }
+
+    .list-group-item-action {
+        border-radius: 0;
+        border-left: 4px solid transparent;
+        background-color: transparent;
+        color: white !important;
+        font-weight: 500;
+        padding: 12px 20px;
+        margin-bottom: 5px;
+        transition: all 0.2s ease;
+    }
+
+    .list-group-item-action.active {
+        background-color: rgba(0, 123, 255, 0.2) !important;
+        border-left: 4px solid #007bff;
+        font-weight: 700;
+    }
+
+    .list-group-item-action:hover {
+        background-color: rgba(255, 255, 255, 0.1) !important;
+        border-left: 4px solid #007bff;
+    }
+
+    .table-hover tbody tr:hover {
+        background-color: rgba(0, 123, 255, 0.05);
+    }
+
+    .contact-table th,
+    .contact-table td {
+        vertical-align: middle;
+        padding: 12px 15px;
+    }
+
+    .badge-status {
+        font-size: 0.85rem;
+        padding: 6px 12px;
+        border-radius: 20px;
+    }
+
+    .dashboard-title {
+        font-weight: 700;
+        margin-bottom: 25px;
+        border-bottom: 2px solid #007bff;
+        padding-bottom: 10px;
+        display: inline-block;
+    }
+
+    .message-preview {
+        max-width: 300px;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+
+    .search-box {
+        position: relative;
+    }
+
+    .contact-status-unread {
+        background-color: #dc3545 !important;
+        color: white;
+    }
+
+    .contact-status-read {
+        background-color: #198754 !important;
+        color: white;
+    }
+</style>
+</head>
+
+<body>
+    <%- include('../partials/header') %>
+
+    <div class="container-fluid p-0">
+        <div class="row g-0">
+            <!-- Sidebar -->
+            <div class="col-md-3 col-lg-2 admin-sidebar">
+                <div class="p-4">
+                    <h4 class="mb-4 text-white">Admin Dashboard</h4>
+                    <div class="list-group list-group-flush">
+                        <a href="/admin/dashboard" class="list-group-item list-group-item-action">
+                            <i class="fas fa-tachometer-alt me-2"></i> Tổng Quan
+                        </a>
+                        <a href="/admin/products" class="list-group-item list-group-item-action">
+                            <i class="fas fa-box me-2"></i> Quản Lý Sản Phẩm
+                        </a>
+                        <a href="/admin/orders" class="list-group-item list-group-item-action">
+                            <i class="fas fa-shopping-cart me-2"></i> Quản Lý Đơn Hàng
+                        </a>
+                        <a href="/admin/users" class="list-group-item list-group-item-action">
+                            <i class="fas fa-users me-2"></i> Quản Lý Người Dùng
+                        </a>
+                        <a href="/admin/contacts" class="list-group-item list-group-item-action active">
+                            <i class="fas fa-envelope me-2"></i> Tin Nhắn Liên Hệ
+                        </a>
+                        <a href="/" class="list-group-item list-group-item-action">
+                            <i class="fas fa-home me-2"></i> Quay Về Trang Chủ
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Main Content -->
+            <div class="col-md-9 col-lg-10 admin-content">
+                <div class="container py-4">
+                    <h2 class="dashboard-title"><i class="fas fa-envelope me-2"></i> Quản Lý Tin Nhắn Liên Hệ</h2>
+
+                    <!-- Alert for status messages -->
+                    <% if (typeof message !== 'undefined' && message) { %>
+                        <div class="alert alert-<%= status %> alert-dismissible fade show" role="alert">
+                            <%= message %>
+                            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                        </div>
+                    <% } %>
+
+                    <!-- Control Panel -->
+                    <div class="card mb-4 shadow-sm">
+                        <div class="card-body">
+                            <div class="row align-items-center">
+                                <div class="col-md-6 mb-3 mb-md-0">
+                                    <div class="d-flex align-items-center">
+                                        <span class="badge bg-danger rounded-pill me-3 p-2">
+                                            <i class="fas fa-envelope me-1"></i>
+                                            <%= unreadCount %> chưa đọc
+                                        </span>
+                                        <span class="badge bg-secondary rounded-pill p-2">
+                                            <i class="fas fa-list me-1"></i>
+                                            <%= totalCount %> tổng số
+                                        </span>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="search-box">
+                                        <form action="/admin/contacts" method="GET" class="d-flex">
+                                            <input type="text" name="search" class="form-control" placeholder="Tìm kiếm tin nhắn..." value="<%= search %>">
+                                            <button type="submit" class="btn btn-primary ms-2">
+                                                <i class="fas fa-search"></i>
+                                            </button>
+                                        </form>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Contacts List -->
+                    <div class="card shadow-sm">
+                        <div class="card-body p-0">
+                            <div class="table-responsive">
+                                <table class="table table-hover contact-table mb-0">
+                                    <thead class="table-light">
+                                        <tr>
+                                            <th scope="col" style="width: 50px;">#</th>
+                                            <th scope="col">Họ Tên</th>
+                                            <th scope="col">Email</th>
+                                            <th scope="col">Tiêu Đề</th>
+                                            <th scope="col">Nội Dung</th>
+                                            <th scope="col">Ngày Gửi</th>
+                                            <th scope="col">Trạng Thái</th>
+                                            <th scope="col" style="width: 150px;">Thao Tác</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <% if (contacts && contacts.length > 0) { %>
+                                            <% contacts.forEach((contact, index) => { %>
+                                                <tr>
+                                                    <td><%= index + 1 %></td>
+                                                    <td><%= contact.name %></td>
+                                                    <td><a href="mailto:<%= contact.email %>"><%= contact.email %></a></td>
+                                                    <td><%= contact.subject %></td>
+                                                    <td class="message-preview"><%= contact.message %></td>
+                                                    <td><%= new Date(contact.createdAt).toLocaleString('vi-VN') %></td>
+                                                    <td>
+                                                        <span class="badge contact-status-<%= contact.status %>">
+                                                            <%= contact.status === 'unread' ? 'Chưa đọc' : 'Đã đọc' %>
+                                                        </span>
+                                                    </td>
+                                                    <td>
+                                                        <button class="btn btn-sm btn-info view-message" 
+                                                                data-bs-toggle="modal" 
+                                                                data-bs-target="#contactModal" 
+                                                                data-id="<%= contact._id %>"
+                                                                data-name="<%= contact.name %>"
+                                                                data-email="<%= contact.email %>"
+                                                                data-subject="<%= contact.subject %>"
+                                                                data-message="<%= contact.message %>"
+                                                                data-date="<%= new Date(contact.createdAt).toLocaleString('vi-VN') %>"
+                                                                data-status="<%= contact.status %>">
+                                                            <i class="fas fa-eye"></i>
+                                                        </button>
+                                                        <% if (contact.status === 'unread') { %>
+                                                            <button class="btn btn-sm btn-success mark-as-read" data-id="<%= contact._id %>">
+                                                                <i class="fas fa-check"></i>
+                                                            </button>
+                                                        <% } %>
+                                                        <button class="btn btn-sm btn-danger delete-contact" data-id="<%= contact._id %>">
+                                                            <i class="fas fa-trash"></i>
+                                                        </button>
+                                                    </td>
+                                                </tr>
+                                            <% }); %>
+                                        <% } else { %>
+                                            <tr>
+                                                <td colspan="8" class="text-center py-4">Không có tin nhắn liên hệ nào</td>
+                                            </tr>
+                                        <% } %>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Pagination -->
+                    <% if (totalPages > 1) { %>
+                        <div class="d-flex justify-content-center mt-4">
+                            <nav aria-label="Page navigation">
+                                <ul class="pagination">
+                                    <% if (currentPage > 1) { %>
+                                        <li class="page-item">
+                                            <a class="page-link" href="/admin/contacts?page=<%= currentPage - 1 %><%= search ? '&search=' + search : '' %>" aria-label="Previous">
+                                                <span aria-hidden="true">&laquo;</span>
+                                            </a>
+                                        </li>
+                                    <% } %>
+
+                                    <% for (let i = 1; i <= totalPages; i++) { %>
+                                        <li class="page-item <%= i === currentPage ? 'active' : '' %>">
+                                            <a class="page-link" href="/admin/contacts?page=<%= i %><%= search ? '&search=' + search : '' %>"><%= i %></a>
+                                        </li>
+                                    <% } %>
+
+                                    <% if (currentPage < totalPages) { %>
+                                        <li class="page-item">
+                                            <a class="page-link" href="/admin/contacts?page=<%= currentPage + 1 %><%= search ? '&search=' + search : '' %>" aria-label="Next">
+                                                <span aria-hidden="true">&raquo;</span>
+                                            </a>
+                                        </li>
+                                    <% } %>
+                                </ul>
+                            </nav>
+                        </div>
+                    <% } %>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Contact Modal -->
+    <div class="modal fade" id="contactModal" tabindex="-1" aria-labelledby="contactModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="contactModalLabel">Chi Tiết Tin Nhắn</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <p><strong>Họ tên:</strong> <span id="modal-name"></span></p>
+                            <p><strong>Email:</strong> <a href="mailto:" id="modal-email-link"><span id="modal-email"></span></a></p>
+                        </div>
+                        <div class="col-md-6">
+                            <p><strong>Ngày gửi:</strong> <span id="modal-date"></span></p>
+                            <p><strong>Trạng thái:</strong> <span id="modal-status" class="badge"></span></p>
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <p><strong>Tiêu đề:</strong> <span id="modal-subject"></span></p>
+                    </div>
+                    <div class="card">
+                        <div class="card-header">
+                            <h6 class="mb-0">Nội dung tin nhắn</h6>
+                        </div>
+                        <div class="card-body">
+                            <p id="modal-message" style="white-space: pre-line;"></p>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-success" id="modal-mark-read">Đánh dấu đã đọc</button>
+                    <button type="button" class="btn btn-danger" id="modal-delete">Xóa tin nhắn</button>
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Đóng</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- JavaScript for handling contacts -->
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // View Contact Details
+            const contactModal = document.getElementById('contactModal');
+            if (contactModal) {
+                contactModal.addEventListener('show.bs.modal', function(event) {
+                    const button = event.relatedTarget;
+                    const contactId = button.getAttribute('data-id');
+                    const name = button.getAttribute('data-name');
+                    const email = button.getAttribute('data-email');
+                    const subject = button.getAttribute('data-subject');
+                    const message = button.getAttribute('data-message');
+                    const date = button.getAttribute('data-date');
+                    const status = button.getAttribute('data-status');
+
+                    // Set values in modal
+                    document.getElementById('modal-name').textContent = name;
+                    document.getElementById('modal-email').textContent = email;
+                    document.getElementById('modal-email-link').href = 'mailto:' + email;
+                    document.getElementById('modal-subject').textContent = subject;
+                    document.getElementById('modal-message').textContent = message;
+                    document.getElementById('modal-date').textContent = date;
+                    
+                    const statusBadge = document.getElementById('modal-status');
+                    statusBadge.textContent = status === 'unread' ? 'Chưa đọc' : 'Đã đọc';
+                    statusBadge.className = 'badge contact-status-' + status;
+
+                    // Set up mark as read button
+                    const markReadBtn = document.getElementById('modal-mark-read');
+                    if (status === 'unread') {
+                        markReadBtn.style.display = 'block';
+                        markReadBtn.onclick = function() {
+                            markAsRead(contactId);
+                        };
+                    } else {
+                        markReadBtn.style.display = 'none';
+                    }
+
+                    // Set up delete button
+                    document.getElementById('modal-delete').onclick = function() {
+                        deleteContact(contactId);
+                    };
+
+                    // Update status to read if it's unread
+                    if (status === 'unread') {
+                        fetch('/api/contact/' + contactId, {
+                            method: 'PUT',
+                            headers: {
+                                'Content-Type': 'application/json'
+                            },
+                            body: JSON.stringify({ status: 'read' })
+                        })
+                        .then(response => response.json())
+                        .then(data => {
+                            if (data.success) {
+                                // Update status in UI
+                                statusBadge.textContent = 'Đã đọc';
+                                statusBadge.className = 'badge contact-status-read';
+                                // Hide mark as read button
+                                markReadBtn.style.display = 'none';
+                                // Update row in table
+                                const row = button.closest('tr');
+                                if (row) {
+                                    const statusCell = row.querySelector('td:nth-child(7)');
+                                    if (statusCell) {
+                                        const statusBadge = statusCell.querySelector('.badge');
+                                        if (statusBadge) {
+                                            statusBadge.textContent = 'Đã đọc';
+                                            statusBadge.className = 'badge contact-status-read';
+                                        }
+                                    }
+                                    // Update unread count
+                                    updateUnreadCount();
+                                }
+                            }
+                        });
+                    }
+                });
+            }
+
+            // Mark as Read buttons
+            document.querySelectorAll('.mark-as-read').forEach(button => {
+                button.addEventListener('click', function() {
+                    const contactId = this.getAttribute('data-id');
+                    markAsRead(contactId);
+                });
+            });
+
+            // Delete buttons
+            document.querySelectorAll('.delete-contact').forEach(button => {
+                button.addEventListener('click', function() {
+                    const contactId = this.getAttribute('data-id');
+                    if (confirm('Bạn có chắc chắn muốn xóa tin nhắn này không?')) {
+                        deleteContact(contactId);
+                    }
+                });
+            });
+
+            function markAsRead(contactId) {
+                fetch('/api/contact/' + contactId, {
+                    method: 'PUT',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ status: 'read' })
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        // Reload page to update UI
+                        window.location.reload();
+                    } else {
+                        alert('Có lỗi xảy ra khi cập nhật trạng thái tin nhắn');
+                    }
+                })
+                .catch(error => {
+                    console.error('Error marking as read:', error);
+                    alert('Có lỗi xảy ra khi cập nhật trạng thái tin nhắn');
+                });
+            }
+
+            function deleteContact(contactId) {
+                fetch('/api/contact/' + contactId, {
+                    method: 'DELETE'
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        // Reload page to update UI
+                        window.location.reload();
+                    } else {
+                        alert('Có lỗi xảy ra khi xóa tin nhắn');
+                    }
+                })
+                .catch(error => {
+                    console.error('Error deleting contact:', error);
+                    alert('Có lỗi xảy ra khi xóa tin nhắn');
+                });
+            }
+
+            function updateUnreadCount() {
+                const unreadCountElement = document.querySelector('.badge.bg-danger');
+                if (unreadCountElement) {
+                    let count = parseInt(unreadCountElement.textContent.split(' ')[0]) - 1;
+                    if (count < 0) count = 0;
+                    unreadCountElement.innerHTML = `<i class="fas fa-envelope me-1"></i> ${count} chưa đọc`;
+                }
+            }
+        });
+    </script>
+
+    <%- include('../partials/footer') %>
+</body>
+
+</html> 

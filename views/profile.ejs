@@ -98,6 +98,7 @@
                                             <% orders.forEach(order => { %>
                                                 <tr>
                                                     <td class="ps-4">#<%= order._id.toString().slice(-6).toUpperCase() %></td>
+<<<<<<< HEAD
                                                     <td><%= new Date(order.createdAt).toLocaleDateString('vi-VN') %></td>
                                                     <td>
                                                         <span class="badge rounded-pill 
@@ -111,6 +112,27 @@
                                                             bg-secondary
                                                         <% } %>">
                                                             <%= order.status || 'Chờ xác nhận' %>
+=======
+                                                    <td><%= new Date(order.orderDate).toLocaleDateString('vi-VN') %></td>
+                                                    <td>
+                                                        <span class="badge rounded-pill 
+                                                        <% if (order.orderStatus === 'delivered') { %>
+                                                            bg-success
+                                                        <% } else if (order.orderStatus === 'processing') { %>
+                                                            bg-warning text-dark
+                                                        <% } else if (order.orderStatus === 'shipped') { %>
+                                                            bg-info text-dark
+                                                        <% } else if (order.orderStatus === 'cancelled') { %>
+                                                            bg-danger
+                                                        <% } else { %>
+                                                            bg-secondary
+                                                        <% } %>">
+                                                            <%= order.orderStatus === 'processing' ? 'Đang xử lý' : 
+                                                               order.orderStatus === 'confirmed' ? 'Đã xác nhận' :
+                                                               order.orderStatus === 'shipped' ? 'Đang giao hàng' :
+                                                               order.orderStatus === 'delivered' ? 'Đã giao hàng' :
+                                                               order.orderStatus === 'cancelled' ? 'Đã hủy' : 'Chờ xác nhận' %>
+>>>>>>> 426465bb2903856af9056c99a1a6e192cacd2815
                                                         </span>
                                                     </td>
                                                     <td><%= new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(order.totalAmount) %></td>
