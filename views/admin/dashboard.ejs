@@ -1,0 +1,274 @@
+<%- include('../partials/head') %>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/chart.js@3.7.0/dist/chart.min.css">
+<title>Quản Trị - Dashboard | Household Goods Store</title>
+</head>
+<body>
+    <%- include('../partials/header') %>
+    
+    <div class="container-fluid p-0">
+        <div class="row g-0">
+            <!-- Sidebar -->
+            <div class="col-md-3 col-lg-2 admin-sidebar">
+                <div class="p-4">
+                    <h4 class="mb-4 text-white">Admin Dashboard</h4>
+                    <div class="list-group list-group-flush">
+                        <a href="/admin/dashboard" class="list-group-item list-group-item-action active">
+                            <i class="fas fa-tachometer-alt me-2"></i> Tổng Quan
+                        </a>
+                        <a href="/admin/products" class="list-group-item list-group-item-action">
+                            <i class="fas fa-box me-2"></i> Quản Lý Sản Phẩm
+                        </a>
+                        <a href="/admin/orders" class="list-group-item list-group-item-action">
+                            <i class="fas fa-shopping-cart me-2"></i> Quản Lý Đơn Hàng
+                        </a>
+                        <a href="/admin/users" class="list-group-item list-group-item-action">
+                            <i class="fas fa-users me-2"></i> Quản Lý Người Dùng
+                        </a>
+                        <a href="/" class="list-group-item list-group-item-action">
+                            <i class="fas fa-home me-2"></i> Quay Về Trang Chủ
+                        </a>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Main Content -->
+            <div class="col-md-9 col-lg-10 admin-content">
+                <div class="container">
+                    <div class="d-flex align-items-center mb-4">
+                        <i class="fas fa-chart-line me-2 text-primary fa-lg"></i>
+                        <h2 class="dashboard-title m-0">Dashboard</h2>
+                    </div>
+                    
+                    <!-- Stats Cards -->
+                    <div class="row mt-4 mb-4">
+                        <div class="col-md-4 mb-3">
+                            <div class="card stats-card shadow-sm border-0 h-100 overflow-hidden">
+                                <div class="card-body position-relative p-0">
+                                    <div class="stats-icon bg-primary-subtle position-absolute top-0 end-0 m-3 rounded-circle d-flex align-items-center justify-content-center">
+                                        <i class="fas fa-box text-primary"></i>
+                                    </div>
+                                    <div class="p-4 pb-5">
+                                        <h6 class="text-muted mb-1 fw-semibold">Tổng Sản Phẩm</h6>
+                                        <h2 class="mb-0 display-6 fw-bold"><%= productCount %></h2>
+                                    </div>
+                                    <div class="card-footer w-100 bg-primary text-white border-0 py-2 position-absolute bottom-0">
+                                        <a href="/admin/products" class="text-white small text-decoration-none d-flex align-items-center justify-content-between">
+                                            <span>Xem chi tiết</span> <i class="fas fa-arrow-right"></i>
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="col-md-4 mb-3">
+                            <div class="card stats-card shadow-sm border-0 h-100 overflow-hidden">
+                                <div class="card-body position-relative p-0">
+                                    <div class="stats-icon bg-success-subtle position-absolute top-0 end-0 m-3 rounded-circle d-flex align-items-center justify-content-center">
+                                        <i class="fas fa-shopping-cart text-success"></i>
+                                    </div>
+                                    <div class="p-4 pb-5">
+                                        <h6 class="text-muted mb-1 fw-semibold">Tổng Đơn Hàng</h6>
+                                        <h2 class="mb-0 display-6 fw-bold"><%= orderCount %></h2>
+                                    </div>
+                                    <div class="card-footer w-100 bg-success text-white border-0 py-2 position-absolute bottom-0">
+                                        <a href="/admin/orders" class="text-white small text-decoration-none d-flex align-items-center justify-content-between">
+                                            <span>Xem chi tiết</span> <i class="fas fa-arrow-right"></i>
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="col-md-4 mb-3">
+                            <div class="card stats-card shadow-sm border-0 h-100 overflow-hidden">
+                                <div class="card-body position-relative p-0">
+                                    <div class="stats-icon bg-warning-subtle position-absolute top-0 end-0 m-3 rounded-circle d-flex align-items-center justify-content-center">
+                                        <i class="fas fa-bell text-warning"></i>
+                                    </div>
+                                    <div class="p-4 pb-5">
+                                        <h6 class="text-muted mb-1 fw-semibold">Đơn Hàng Mới</h6>
+                                        <h2 class="mb-0 display-6 fw-bold"><%= newOrderCount %></h2>
+                                    </div>
+                                    <div class="card-footer w-100 bg-warning text-white border-0 py-2 position-absolute bottom-0">
+                                        <a href="/admin/orders?status=processing" class="text-white small text-decoration-none d-flex align-items-center justify-content-between">
+                                            <span>Xử lý ngay</span> <i class="fas fa-arrow-right"></i>
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Charts -->
+                    <div class="row mt-4">
+                        <div class="col-lg-8 mb-4">
+                            <div class="dashboard-chart-container">
+                                <h5 class="mb-3">Biểu Đồ Doanh Thu</h5>
+                                <canvas id="revenueChart"></canvas>
+                            </div>
+                        </div>
+                        <div class="col-lg-4 mb-4">
+                            <div class="dashboard-chart-container">
+                                <h5 class="mb-3">Phân Bố Đơn Hàng</h5>
+                                <canvas id="orderDistribution"></canvas>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Recent Orders -->
+                    <div class="row">
+                        <div class="col-12">
+                            <div class="card">
+                                <div class="card-header bg-white">
+                                    <div class="d-flex justify-content-between align-items-center">
+                                        <h5 class="mb-0">Đơn Hàng Gần Đây</h5>
+                                        <a href="/admin/orders" class="btn btn-sm btn-primary">Xem Tất Cả</a>
+                                    </div>
+                                </div>
+                                <div class="card-body p-0">
+                                    <div class="table-responsive">
+                                        <table class="table table-hover mb-0">
+                                            <thead>
+                                                <tr>
+                                                    <th>Mã Đơn</th>
+                                                    <th>Khách Hàng</th>
+                                                    <th>Tổng Tiền</th>
+                                                    <th>Trạng Thái</th>
+                                                    <th>Ngày Đặt</th>
+                                                    <th>Hành Động</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                <% if (recentOrders && recentOrders.length > 0) { %>
+                                                    <% recentOrders.forEach(order => { %>
+                                                        <tr>
+                                                            <td><span class="fw-bold">#<%= order._id.toString().substring(0, 8) %></span></td>
+                                                            <td><%= order.shippingAddress.fullName %></td>
+                                                            <td><span class="fw-bold text-dark"><%= order.totalAmount.toLocaleString('vi-VN') %>₫</span></td>
+                                                            <td>
+                                                                <span class="badge badge-status <%= 
+                                                                    order.orderStatus === 'processing' ? 'bg-warning' : 
+                                                                    order.orderStatus === 'confirmed' ? 'bg-info' : 
+                                                                    order.orderStatus === 'shipped' ? 'bg-primary' : 
+                                                                    order.orderStatus === 'delivered' ? 'bg-success' : 
+                                                                    'bg-danger' 
+                                                                %>">
+                                                                    <%= 
+                                                                        order.orderStatus === 'processing' ? 'Đang xử lý' : 
+                                                                        order.orderStatus === 'confirmed' ? 'Đã xác nhận' : 
+                                                                        order.orderStatus === 'shipped' ? 'Đang giao' : 
+                                                                        order.orderStatus === 'delivered' ? 'Đã giao' : 
+                                                                        'Đã hủy' 
+                                                                    %>
+                                                                </span>
+                                                            </td>
+                                                            <td><%= new Date(order.orderDate).toLocaleDateString('vi-VN') %></td>
+                                                            <td>
+                                                                <a href="/admin/orders/<%= order._id %>" class="btn btn-sm btn-outline-primary">
+                                                                    <i class="fas fa-eye"></i>
+                                                                </a>
+                                                            </td>
+                                                        </tr>
+                                                    <% }) %>
+                                                <% } else { %>
+                                                    <tr>
+                                                        <td colspan="6" class="text-center py-4">Không có đơn hàng nào gần đây</td>
+                                                    </tr>
+                                                <% } %>
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@3.7.0/dist/chart.min.js"></script>
+    <script>
+        // Dữ liệu mẫu cho biểu đồ doanh thu
+        const revenueCtx = document.getElementById('revenueChart').getContext('2d');
+        const revenueChart = new Chart(revenueCtx, {
+            type: 'line',
+            data: {
+                labels: ['T1', 'T2', 'T3', 'T4', 'T5', 'T6', 'T7', 'T8', 'T9', 'T10', 'T11', 'T12'],
+                datasets: [{
+                    label: 'Doanh thu',
+                    data: [2100000, 1900000, 3000000, 5100000, 2300000, 3800000, 4200000, 5100000, 4900000, 6300000, 5600000, 8200000],
+                    borderColor: '#0d6efd',
+                    backgroundColor: 'rgba(13, 110, 253, 0.1)',
+                    borderWidth: 2,
+                    fill: true,
+                    tension: 0.3
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: true,
+                aspectRatio: 2,
+                plugins: {
+                    legend: {
+                        display: false
+                    }
+                },
+                scales: {
+                    x: {
+                        grid: {
+                            display: false
+                        }
+                    },
+                    y: {
+                        beginAtZero: true,
+                        max: 10000000,
+                        ticks: {
+                            callback: function(value) {
+                                return value.toLocaleString('vi-VN') + '₫';
+                            }
+                        }
+                    }
+                }
+            }
+        });
+        
+        // Dữ liệu mẫu cho biểu đồ trạng thái đơn hàng
+        const statusCtx = document.getElementById('orderDistribution').getContext('2d');
+        const statusChart = new Chart(statusCtx, {
+            type: 'doughnut',
+            data: {
+                labels: ['Đang xử lý', 'Đã xác nhận', 'Đang giao', 'Đã giao', 'Đã hủy'],
+                datasets: [{
+                    data: [<%= newOrderCount %>, <%= Math.floor(Math.random() * 10) + 5 %>, <%= Math.floor(Math.random() * 8) + 3 %>, <%= Math.floor(Math.random() * 20) + 10 %>, <%= Math.floor(Math.random() * 5) + 1 %>],
+                    backgroundColor: [
+                        '#ffc107', // warning
+                        '#0dcaf0', // info
+                        '#0d6efd', // primary
+                        '#198754', // success
+                        '#dc3545'  // danger
+                    ],
+                    borderWidth: 0
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: true,
+                aspectRatio: 1,
+                plugins: {
+                    legend: {
+                        position: 'bottom',
+                        labels: {
+                            padding: 20,
+                            boxWidth: 12
+                        }
+                    }
+                },
+                cutout: '70%'
+            }
+        });
+    </script>
+    
+    <%- include('../partials/footer') %>
+</body>
+</html> 

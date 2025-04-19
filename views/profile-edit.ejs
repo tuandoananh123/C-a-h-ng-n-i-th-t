@@ -1,0 +1,146 @@
+<%- include('./partials/header') %>
+
+<div class="container mt-5 pt-5">
+    <div class="row">
+        <div class="col-lg-8 mx-auto">
+            <div class="card shadow-sm border-0 rounded-3">
+                <div class="card-header bg-primary text-white">
+                    <h4 class="mb-0"><i class="fas fa-user-edit me-2"></i>Cập nhật thông tin cá nhân</h4>
+                </div>
+                <div class="card-body p-4">
+                    <form id="editProfileForm">
+                        <div class="alert alert-success d-none" id="successMessage">
+                            Thông tin đã được cập nhật thành công!
+                        </div>
+                        <div class="alert alert-danger d-none" id="errorMessage"></div>
+
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                <label for="firstName" class="form-label">Họ</label>
+                                <input type="text" class="form-control" id="firstName" name="firstName" value="<%= user.firstName %>" required>
+                            </div>
+                            <div class="col-md-6">
+                                <label for="lastName" class="form-label">Tên</label>
+                                <input type="text" class="form-control" id="lastName" name="lastName" value="<%= user.lastName %>" required>
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="email" class="form-label">Email</label>
+                            <input type="email" class="form-control" id="email" name="email" value="<%= user.email %>" readonly>
+                            <small class="text-muted">Email không thể thay đổi.</small>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="phoneNumber" class="form-label">Số điện thoại</label>
+                            <input type="tel" class="form-control" id="phoneNumber" name="phoneNumber" value="<%= user.phoneNumber || '' %>">
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="address" class="form-label">Địa chỉ</label>
+                            <textarea class="form-control" id="address" name="address" rows="3"><%= user.address || '' %></textarea>
+                        </div>
+
+                        <hr class="my-4">
+                        <h5 class="mb-3">Đổi mật khẩu</h5>
+                        <p class="text-muted mb-3">Để giữ nguyên mật khẩu hiện tại, hãy để trống các trường dưới đây.</p>
+
+                        <div class="mb-3">
+                            <label for="currentPassword" class="form-label">Mật khẩu hiện tại</label>
+                            <input type="password" class="form-control" id="currentPassword" name="currentPassword">
+                        </div>
+
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                <label for="newPassword" class="form-label">Mật khẩu mới</label>
+                                <input type="password" class="form-control" id="newPassword" name="newPassword">
+                            </div>
+                            <div class="col-md-6">
+                                <label for="confirmPassword" class="form-label">Xác nhận mật khẩu mới</label>
+                                <input type="password" class="form-control" id="confirmPassword" name="confirmPassword">
+                            </div>
+                        </div>
+
+                        <div class="d-flex justify-content-between mt-4">
+                            <a href="/profile" class="btn btn-outline-secondary"><i class="fas fa-arrow-left me-2"></i>Quay lại</a>
+                            <button type="submit" class="btn btn-primary"><i class="fas fa-save me-2"></i>Lưu thay đổi</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    document.getElementById('editProfileForm').addEventListener('submit', async (e) => {
+        e.preventDefault();
+        
+        const successMessage = document.getElementById('successMessage');
+        const errorMessage = document.getElementById('errorMessage');
+        successMessage.classList.add('d-none');
+        errorMessage.classList.add('d-none');
+        
+        // Kiểm tra mật khẩu nếu đã nhập
+        const newPassword = document.getElementById('newPassword').value;
+        const confirmPassword = document.getElementById('confirmPassword').value;
+        if (newPassword && newPassword !== confirmPassword) {
+            errorMessage.textContent = 'Mật khẩu xác nhận không khớp với mật khẩu mới';
+            errorMessage.classList.remove('d-none');
+            return;
+        }
+        
+        // Chuẩn bị dữ liệu để gửi
+        const formData = {
+            firstName: document.getElementById('firstName').value,
+            lastName: document.getElementById('lastName').value,
+            phoneNumber: document.getElementById('phoneNumber').value,
+            address: document.getElementById('address').value
+        };
+        
+        // Thêm mật khẩu vào dữ liệu nếu có
+        const currentPassword = document.getElementById('currentPassword').value;
+        if (currentPassword && newPassword) {
+            formData.currentPassword = currentPassword;
+            formData.newPassword = newPassword;
+        }
+        
+        try {
+            const response = await fetch('/api/users/profile', {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(formData)
+            });
+            
+            const data = await response.json();
+            
+            if (!response.ok) {
+                errorMessage.textContent = data.error || 'Cập nhật thất bại. Vui lòng thử lại.';
+                errorMessage.classList.remove('d-none');
+            } else {
+                successMessage.classList.remove('d-none');
+                
+                // Xóa giá trị mật khẩu sau khi cập nhật thành công
+                document.getElementById('currentPassword').value = '';
+                document.getElementById('newPassword').value = '';
+                document.getElementById('confirmPassword').value = '';
+                
+                // Cuộn lên đầu trang để hiển thị thông báo thành công
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+                
+                // Chuyển hướng lại trang hồ sơ sau 2 giây
+                setTimeout(() => {
+                    window.location.href = '/profile';
+                }, 2000);
+            }
+        } catch (error) {
+            errorMessage.textContent = 'Có lỗi xảy ra. Vui lòng thử lại sau.';
+            errorMessage.classList.remove('d-none');
+            console.error('Lỗi cập nhật thông tin:', error);
+        }
+    });
+</script>
+
+<%- include('./partials/footer') %> 

@@ -1,0 +1,163 @@
+<%- include('./partials/header') %>
+
+<div class="container mt-4 py-4">
+    <div class="row">
+        <!-- Sidebar -->
+        <div class="col-lg-3 mb-4">
+            <!-- User Info Card -->
+            <div class="card border-0 shadow-sm rounded-3 mb-4">
+                <div class="card-body p-4">
+                    <div class="text-center">
+                        <h5 class="fw-bold mb-2"><%= user.firstName %> <%= user.lastName %></h5>
+                        <p class="text-muted small mb-3"><%= user.email %></p>
+                        <a href="/profile-edit" class="btn btn-primary btn-sm w-100"><i class="fas fa-user-edit me-2"></i>Chỉnh sửa thông tin</a>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Navigation Menu -->
+            <div class="list-group shadow-sm rounded-3">
+                <a href="#personal-info" class="list-group-item list-group-item-action active" data-bs-toggle="list">
+                    <i class="fas fa-user me-2"></i>Thông tin cá nhân
+                </a>
+                <a href="#order-history" class="list-group-item list-group-item-action" data-bs-toggle="list">
+                    <i class="fas fa-shopping-bag me-2"></i>Lịch sử đơn hàng
+                </a>
+            </div>
+        </div>
+        
+        <!-- Main Content -->
+        <div class="col-lg-9">
+            <div class="tab-content">
+                <!-- Personal Information Tab -->
+                <div class="tab-pane fade show active" id="personal-info">
+                    <div class="card border-0 shadow-sm rounded-3">
+                        <div class="card-header bg-white py-3">
+                            <h5 class="mb-0"><i class="fas fa-user-circle me-2"></i>Thông tin cá nhân</h5>
+                        </div>
+                        <div class="card-body p-4">
+                            <div class="row mb-3">
+                                <div class="col-sm-3">
+                                    <p class="mb-0 text-muted">Họ và tên</p>
+                                </div>
+                                <div class="col">
+                                    <p class="mb-0 fw-medium"><%= user.firstName %> <%= user.lastName %></p>
+                                </div>
+                            </div>
+                            <hr>
+                            <div class="row mb-3">
+                                <div class="col-sm-3">
+                                    <p class="mb-0 text-muted">Email</p>
+                                </div>
+                                <div class="col">
+                                    <p class="mb-0"><%= user.email %></p>
+                                </div>
+                            </div>
+                            <hr>
+                            <div class="row mb-3">
+                                <div class="col-sm-3">
+                                    <p class="mb-0 text-muted">Số điện thoại</p>
+                                </div>
+                                <div class="col">
+                                    <p class="mb-0"><%= user.phoneNumber || 'Chưa cung cấp' %></p>
+                                </div>
+                            </div>
+                            <hr>
+                            <div class="row">
+                                <div class="col-sm-3">
+                                    <p class="mb-0 text-muted">Địa chỉ</p>
+                                </div>
+                                <div class="col">
+                                    <p class="mb-0"><%= user.address || 'Chưa cung cấp' %></p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Order History Tab -->
+                <div class="tab-pane fade" id="order-history">
+                    <div class="card border-0 shadow-sm rounded-3">
+                        <div class="card-header bg-white py-3">
+                            <h5 class="mb-0"><i class="fas fa-history me-2"></i>Lịch sử đơn hàng</h5>
+                        </div>
+                        <div class="card-body p-0">
+                            <% if (typeof orders !== 'undefined' && orders && orders.length > 0) { %>
+                                <div class="table-responsive">
+                                    <table class="table table-hover mb-0">
+                                        <thead>
+                                            <tr>
+                                                <th class="ps-4">Mã đơn hàng</th>
+                                                <th>Ngày đặt</th>
+                                                <th>Trạng thái</th>
+                                                <th>Tổng tiền</th>
+                                                <th>Thao tác</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <% orders.forEach(order => { %>
+                                                <tr>
+                                                    <td class="ps-4">#<%= order._id.toString().slice(-6).toUpperCase() %></td>
+                                                    <td><%= new Date(order.createdAt).toLocaleDateString('vi-VN') %></td>
+                                                    <td>
+                                                        <span class="badge rounded-pill 
+                                                        <% if (order.status === 'Đã giao hàng') { %>
+                                                            bg-success
+                                                        <% } else if (order.status === 'Đang xử lý') { %>
+                                                            bg-warning text-dark
+                                                        <% } else if (order.status === 'Đang giao hàng') { %>
+                                                            bg-info text-dark
+                                                        <% } else { %>
+                                                            bg-secondary
+                                                        <% } %>">
+                                                            <%= order.status || 'Chờ xác nhận' %>
+                                                        </span>
+                                                    </td>
+                                                    <td><%= new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(order.totalAmount) %></td>
+                                                    <td>
+                                                        <a href="/user/orders/<%= order._id %>" class="btn btn-sm btn-outline-primary">Chi tiết</a>
+                                                    </td>
+                                                </tr>
+                                            <% }) %>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            <% } else { %>
+                                <div class="text-center py-5">
+                                    <img src="/images/empty-order.png" alt="Không có đơn hàng" style="max-width: 120px; opacity: 0.5;" class="mb-3">
+                                    <h6 class="text-muted">Bạn chưa có đơn hàng nào</h6>
+                                    <a href="/products" class="btn btn-primary mt-3"><i class="fas fa-shopping-cart me-2"></i>Mua sắm ngay</a>
+                                </div>
+                            <% } %>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    // Kích hoạt tabs Bootstrap
+    document.addEventListener('DOMContentLoaded', function() {
+        // Xử lý hash URL để hiển thị tab tương ứng
+        const hash = window.location.hash;
+        if (hash) {
+            const triggerEl = document.querySelector(`a[href="${hash}"]`);
+            if (triggerEl) {
+                const tabTrigger = new bootstrap.Tab(triggerEl);
+                tabTrigger.show();
+            }
+        }
+        
+        // Cập nhật URL khi chuyển tab
+        const tabEls = document.querySelectorAll('a[data-bs-toggle="list"]');
+        tabEls.forEach(tabEl => {
+            tabEl.addEventListener('shown.bs.tab', function (event) {
+                history.pushState(null, null, event.target.getAttribute('href'));
+            });
+        });
+    });
+</script>
+
+<%- include('./partials/footer') %>
