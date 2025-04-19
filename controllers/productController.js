@@ -460,8 +460,7 @@ exports.getAdminProducts = async (req, res) => {
     });
   }
 };
-<<<<<<< HEAD
-=======
+
 
 // Admin: Hiển thị trang thêm sản phẩm mới
 exports.getAddProductPage = async (req, res) => {
@@ -519,4 +518,4 @@ exports.getEditProductPage = async (req, res) => {
     });
   }
 };
->>>>>>> 426465bb2903856af9056c99a1a6e192cacd2815
+
