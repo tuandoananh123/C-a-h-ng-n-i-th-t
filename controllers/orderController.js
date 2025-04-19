@@ -2,10 +2,7 @@ const Order = require('../models/Order');
 const Cart = require('../models/Cart');
 const Product = require('../models/Product');
 const User = require('../models/User');
-<<<<<<< HEAD
-=======
 const Contact = require('../models/Contact');
->>>>>>> 426465bb2903856af9056c99a1a6e192cacd2815
 
 // Create new order
 exports.createOrder = async (req, res) => {
@@ -428,8 +425,6 @@ exports.getAdminDashboard = async (req, res) => {
       .sort({ orderDate: -1 })
       .limit(5);
     
-<<<<<<< HEAD
-=======
     // Lấy số tin nhắn liên hệ chưa đọc
     let unreadContactCount = 0;
     try {
@@ -439,17 +434,13 @@ exports.getAdminDashboard = async (req, res) => {
       // Set default value to 0
     }
     
->>>>>>> 426465bb2903856af9056c99a1a6e192cacd2815
     res.render('admin/dashboard', {
       title: 'Quản Trị - Dashboard',
       productCount,
       orderCount,
       newOrderCount,
       recentOrders,
-<<<<<<< HEAD
-=======
       unreadContactCount,
->>>>>>> 426465bb2903856af9056c99a1a6e192cacd2815
       user: req.session.user || null
     });
   } catch (error) {

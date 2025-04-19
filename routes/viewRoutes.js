@@ -7,14 +7,9 @@ const Category = require('../models/Category');
 const mongoose = require('mongoose');
 const orderController = require('../controllers/orderController');
 const productController = require('../controllers/productController');
-<<<<<<< HEAD
-const { protect, admin, isAuth } = require('../middlewares/authMiddleware');
-const userController = require('../controllers/userController');
-=======
 const { protect, admin, isAuth, authorize } = require('../middlewares/authMiddleware');
 const userController = require('../controllers/userController');
 const contactController = require('../controllers/contactController');
->>>>>>> 426465bb2903856af9056c99a1a6e192cacd2815
 
 // Middleware kiểm tra đăng nhập
 const checkAuth = (req, res, next) => {
@@ -231,29 +226,6 @@ router.get('/profile', checkAuth, async (req, res) => {
 });
 
 // Admin Routes
-<<<<<<< HEAD
-router.get('/admin', protect, admin, (req, res) => {
-  res.redirect('/admin/dashboard');
-});
-router.get('/admin/dashboard', protect, admin, orderController.getAdminDashboard);
-
-// Admin Product Routes
-router.get('/admin/products', protect, admin, productController.getAdminProducts);
-router.post('/admin/products', protect, admin, productController.createProduct);
-router.post('/admin/products/update', protect, admin, productController.updateProduct);
-router.post('/admin/products/delete', protect, admin, productController.deleteProduct);
-
-// Admin Order Routes
-router.get('/admin/orders', protect, admin, orderController.getAdminOrders);
-router.get('/admin/orders/:id', protect, admin, orderController.getAdminOrderDetail);
-router.post('/admin/orders/update-status', protect, admin, orderController.updateOrderStatus);
-
-// Admin User Management Routes
-router.get('/admin/users', protect, admin, userController.getAdminUsers);
-router.get('/admin/users/:id', protect, admin, userController.getAdminUserDetail);
-router.post('/admin/users/:id/update', protect, admin, userController.updateUser);
-router.post('/admin/users/delete', protect, admin, userController.deleteUser);
-=======
 router.get('/admin', protect, authorize('admin'), (req, res) => {
   res.redirect('/admin/dashboard');
 });
@@ -477,6 +449,5 @@ router.get('/admin/contacts', protect, authorize('admin'), (req, res) => {
     });
   }
 });
->>>>>>> 426465bb2903856af9056c99a1a6e192cacd2815
 
 module.exports = router;
